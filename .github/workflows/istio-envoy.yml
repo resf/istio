@@ -1,0 +1,45 @@
+name: istio-envoy
+
+on:
+  push:
+    paths:
+      - '.github/workflows/istio-envoy.yml'
+      - 'istio-envoy/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    needs: [build-amd64, build-arm64]
+    steps:
+      - uses: actions/checkout@v1
+      - uses: crazy-max/ghaction-docker-buildx@v3
+        with:
+          buildx-version: latest
+      - run: echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - run: ./join.sh querycapistio/istio-envoy $(cat ./istio-envoy/.version)
+
+  build-amd64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: crazy-max/ghaction-docker-buildx@v3
+        with:
+          buildx-version: latest
+      - run: echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - run: VERSION=$(cat ./istio-envoy/.version) docker buildx bake --set=*.context=./istio-envoy -f ./istio-envoy/bake.hcl amd64 --push
+
+  build-arm64:
+    runs-on: [self-hosted, linux, ARM64]
+    steps:
+      - uses: actions/checkout@v1
+      - run: echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - run: VERSION=$(cat ./istio-envoy/.version) docker buildx bake --set=*.context=./istio-envoy -f ./istio-envoy/bake.hcl arm64 --push

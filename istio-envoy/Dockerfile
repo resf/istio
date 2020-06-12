@@ -1,4 +1,4 @@
-FROM querycapistio/istio-enovy-build-env:1.6.1 as builder
+FROM querycapistio/build-env:0a7d884d1bdf155a74f148076c7f32f79f3dcc55 as builder
 
 ARG VERSION=1.6.1
 
