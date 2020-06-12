@@ -2,17 +2,24 @@ variable VERSION {
   default = "1.6.1"
 }
 
-target "default" {
+target "arm64" {
   context = "."
   dockerfile = "Dockerfile"
   tags = [
-    "querycapistio/istio-enovy-build-env:${VERSION}"
+    "querycapistio/build-env:${VERSION}-arm64"
   ]
-  args = {
-    VERSION = "${VERSION}"
-  }
   platforms = [
-    "linux/amd64",
     "linux/arm64"
+  ]
+}
+
+target "amd64" {
+  context = "."
+  dockerfile = "Dockerfile"
+  tags = [
+    "querycapistio/build-env:${VERSION}-amd64"
+  ]
+  platforms = [
+    "linux/amd64"
   ]
 }

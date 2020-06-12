@@ -1,10 +1,10 @@
-name: hsdis
+name: build-env
 
 on:
   push:
     paths:
-      - '.github/workflows/hsdis.yml'
-      - 'hsdis/**'
+      - '.github/workflows/build-env.yml'
+      - 'build-env/**'
 
 jobs:
   build:
@@ -19,7 +19,7 @@ jobs:
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      - run: ./join.sh querycapistio/hsdis latest
+      - run: ./join.sh querycapistio/build-env ${{ github.sha }}
 
   build-amd64:
     runs-on: ubuntu-latest
@@ -32,7 +32,7 @@ jobs:
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      - run: docker buildx bake --set=*.context=./hsdis -f ./hsdis/bake.hcl amd64 --push
+      - run: VERSION=${{ github.sha }} docker buildx bake --set=*.context=./build-env -f ./build-env/bake.hcl amd64 --push
 
   build-arm64:
     runs-on: [self-hosted, linux, ARM64]
@@ -42,4 +42,4 @@ jobs:
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      - run: docker buildx bake --set=*.context=./hsdis -f ./hsdis/bake.hcl arm64 --push
+      - run: VERSION=${{ github.sha }} docker buildx bake --set=*.context=./build-env -f ./build-env/bake.hcl arm64 --push
