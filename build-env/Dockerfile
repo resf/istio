@@ -95,8 +95,6 @@ RUN set -eux; \
     go get github.com/bazelbuild/buildtools/buildozer; \
     export BUILDOZER_BIN=${GOPATH}/bin/buildozer; \
     \
-    bazel --version; \
-    \
     rm -rf ${GOPATH}/src 
 
 
