@@ -1,0 +1,3 @@
+ARG VERSION
+
+FROM istio/pilot:${VERSION}

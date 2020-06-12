@@ -19,8 +19,9 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       - run: |
+          export VERSION=$(cat ./istio-arm64-binaries/.version);
           git clone https://github.com/morlay/istio;
           cd istio;
-          git checkout buildx-$(cat ../istio-arm64-binaries/.version);
+          git checkout buildx-${VERSION}
           sed -i -e 's/run -it/run/g' common/scripts/run.sh;
-          sudo HUB=querycapistio TARGET_ARCH=arm64 BUILD_WITH_CONTAINER=1 make dockerx.pushx;
+          HUB=querycapistio TARGET_ARCH=arm64 TAG=${VERSION}-binary BUILD_WITH_CONTAINER=1 make dockerx.pushx;

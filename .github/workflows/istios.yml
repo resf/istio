@@ -1,0 +1,26 @@
+name: istios
+
+on:
+  push:
+    paths:
+      - '.github/workflows/istios.yml'
+      - 'istios/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: crazy-max/ghaction-docker-buildx@v3
+        with:
+          buildx-version: v0.4.1
+      - run: echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - run: |
+          export VERSION=$(cat ./istios/.version);
+          export HUB=querycapistio;
+          cd ./istios;
+          docker buildx bake -f bake.hcl base --push
+          docker buildx bake -f bake.hcl --push

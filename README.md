@@ -1,14 +1,10 @@
-# istio oci image 
+# istio OCI Images 
 
-only for amd64 && arm64
-
-## Usage
-
-```
-querycapistio/proxyv2:1.6.1
-querycapistio/pilot:1.6.1
-querycapistio/operator:1.6.1
-```
+| Name | Docker Image | Architecture | 
+|------|--------------|--------------|
+| querycapistio/proxyv2 | [![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/proxyv2)](https://hub.docker.com/r/querycapistio/proxyv2) | `arm64/amd64` | 
+| querycapistio/pilot | [![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/pilot)](https://hub.docker.com/r/querycapistio/pilot) | `arm64/amd64` |
+| querycapistio/operator | [![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/operator)](https://hub.docker.com/r/querycapistio/operator) | `arm64/amd64` |
 
 ### AMD64 
 
