@@ -3,6 +3,8 @@ ARG BASE=default
 
 FROM ${BINARY} as binary
 
+FROM querycapistio/istio-enovy:1.6.1-arm64 as envoy
+
 FROM ${BASE}
 
 COPY --from=binary /var/lib/istio/envoy/envoy_bootstrap_tmpl.json /var/lib/istio/envoy/envoy_bootstrap_tmpl.json
@@ -13,7 +15,7 @@ RUN chown -R istio-proxy /var/lib/istio
 ARG PROXY_VERSION
 ARG VERSION
 
-ADD https://github.com/morlay/istio-envoy-arm64/raw/master/envoy /usr/local/bin/envoy
+COPY --from=envoy /envoy/envoy/envoy /usr/local/bin/envoy
 RUN chmod a+x /usr/local/bin/envoy
 
 ENV ISTIO_META_ISTIO_PROXY_SHA $PROXY_VERSION
