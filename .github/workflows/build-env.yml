@@ -35,9 +35,12 @@ jobs:
       - run: VERSION=${{ github.sha }} docker buildx bake --set=*.context=./build-env -f ./build-env/bake.hcl amd64 --push
 
   build-arm64:
-    runs-on: [self-hosted, linux, ARM64]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
+      - uses: crazy-max/ghaction-docker-buildx@v3
+        with:
+          buildx-version: latest
       - run: echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
