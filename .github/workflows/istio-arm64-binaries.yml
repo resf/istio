@@ -24,4 +24,4 @@ jobs:
           cd istio;
           git checkout buildx-${VERSION}
           sed -i -e 's/run -it/run/g' common/scripts/run.sh;
-          HUB=querycapistio TARGET_ARCH=arm64 TAG=${VERSION}-binary BUILD_WITH_CONTAINER=1 make dockerx.pushx;
+          HUB=querycapistio TARGET_ARCH=arm64 TAG=${VERSION}-binary-arm64 BUILD_WITH_CONTAINER=1 make dockerx.pushx;
