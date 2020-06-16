@@ -24,3 +24,6 @@ jobs:
           cd ./istios;
           docker buildx bake -f bake.hcl base --push
           docker buildx bake -f bake.hcl --push
+      - run: ./join.sh querycapistio/proxyv2 $(cat ./istios/.version);
+      - run: ./join.sh querycapistio/pilot $(cat ./istios/.version);
+      - run: ./join.sh querycapistio/operator $(cat ./istios/.version);
