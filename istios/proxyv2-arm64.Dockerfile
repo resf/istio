@@ -3,7 +3,7 @@ ARG BASE=default
 
 FROM ${BINARY} as binary
 
-FROM querycapistio/istio-enovy:1.6.1-arm64 as envoy
+FROM querycapistio/istio-enovy:1.6.2-arm64 as envoy
 
 FROM ${BASE}
 
