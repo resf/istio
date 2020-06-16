@@ -56,8 +56,8 @@ target "proxyv2-arm64" {
   args = {
     BASE = "${HUB}/base:${VERSION}"
     BINARY = "${HUB}/proxyv2:${VERSION}-binary-arm64"
+    ISTIO_ENVOY_SHA = "9e2704aa828400b4c5e0b9c54db46c538d2b1ebf"
     VERSION = "${VERSION}"
-    PROXY_VERSION = "istio-proxy:9e2704aa828400b4c5e0b9c54db46c538d2b1ebf"
   }
   platforms = [
     "linux/arm64"

@@ -1,9 +1,10 @@
 ARG BINARY=querycapistio/proxyv2:latest-arm64
 ARG BASE=default
+ARG ISTIO_ENVOY_SHA=9e2704aa828400b4c5e0b9c54db46c538d2b1ebf
 
 FROM ${BINARY} as binary
 
-FROM querycapistio/istio-enovy:1.6.2-arm64 as envoy
+FROM querycapistio/istio-enovy:${ISTIO_ENVOY_SHA}-arm64 as envoy
 
 FROM ${BASE}
 
@@ -18,7 +19,7 @@ ARG VERSION
 COPY --from=envoy /envoy/envoy/envoy /usr/local/bin/envoy
 RUN chmod a+x /usr/local/bin/envoy
 
-ENV ISTIO_META_ISTIO_PROXY_SHA $PROXY_VERSION
+ENV ISTIO_META_ISTIO_PROXY_SHA istio-proxy:${ISTIO_ENVOY_SHA}
 ENV ISTIO_META_VERSION $VERSION
 
 COPY --from=binary /usr/local/bin/pilot-agent /usr/local/bin/pilot-agent
