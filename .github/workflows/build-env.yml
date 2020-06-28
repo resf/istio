@@ -7,6 +7,33 @@ on:
       - 'build-env/**'
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    needs: [build-amd64, build-arm64]
+    steps:
+      - uses: actions/checkout@v1
+      - uses: crazy-max/ghaction-docker-buildx@v3
+        with:
+          buildx-version: v0.4.1
+      - run: echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - run: ./join.sh querycapistio/build-env ${{ github.sha }}
+
+  build-amd64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: crazy-max/ghaction-docker-buildx@v3
+        with:
+          buildx-version: v0.4.1
+      - run: echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - run: VERSION=${{ github.sha }} docker buildx bake --set=*.context=./build-env -f ./build-env/bake.hcl amd64 --push
+
   build-arm64:
     runs-on: ubuntu-latest
     steps:
