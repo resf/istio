@@ -1,5 +1,5 @@
 variable VERSION {
-  default = "1.6.1"
+  default = "1.6.3"
 }
 
 variable HUB {
