@@ -6,15 +6,8 @@ variable HUB {
   default = "istio"
 }
 
-target "base" {
-  dockerfile = "base.Dockerfile"
-  tags = [
-    "${HUB}/base:${VERSION}"
-  ]
-  platforms = [
-    "linux/amd64",
-    "linux/arm64"
-  ]
+variable BASE_VERSION {
+  default = "2020-06-29"
 }
 
 group "default" {
@@ -54,9 +47,8 @@ target "proxyv2-arm64" {
     "${HUB}/proxyv2:${VERSION}-arm64"
   ]
   args = {
-    BASE = "${HUB}/base:${VERSION}"
+    BASE = "${HUB}/base:${BASE_VERSION}"
     BINARY = "${HUB}/proxyv2:${VERSION}-binary-arm64"
-    ISTIO_ENVOY_SHA = "${VERSION}"
     VERSION = "${VERSION}"
   }
   platforms = [
@@ -70,7 +62,7 @@ target "pilot-arm64" {
     "${HUB}/pilot:${VERSION}-arm64"
   ]
   args = {
-    BASE = "${HUB}/base:${VERSION}"
+    BASE = "${HUB}/base:${BASE_VERSION}"
     BINARY = "${HUB}/pilot:${VERSION}-binary-arm64"
     VERSION = "${VERSION}"
   }
@@ -84,7 +76,7 @@ target "operator-arm64" {
     "${HUB}/operator:${VERSION}-arm64"
   ]
   args = {
-    BASE = "${HUB}/base:${VERSION}"
+    BASE = "${HUB}/base:${BASE_VERSION}"
     BINARY = "${HUB}/operator:${VERSION}-binary-arm64"
     VERSION = "${VERSION}"
   }

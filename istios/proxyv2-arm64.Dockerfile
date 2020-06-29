@@ -1,26 +1,21 @@
 ARG BINARY=querycapistio/proxyv2:latest-arm64
 ARG BASE=default
-ARG ISTIO_ENVOY_SHA=9e2704aa828400b4c5e0b9c54db46c538d2b1ebf
 
 FROM ${BINARY} as binary
-
-FROM querycapistio/istio-enovy:${ISTIO_ENVOY_SHA}-arm64 as envoy
-
 FROM ${BASE}
+
+ARG VERSION=1.6.1
 
 COPY --from=binary /var/lib/istio/envoy/envoy_bootstrap_tmpl.json /var/lib/istio/envoy/envoy_bootstrap_tmpl.json
 COPY --from=binary /var/lib/istio/envoy/gcp_envoy_bootstrap_tmpl.json /var/lib/istio/envoy/gcp_envoy_bootstrap_tmpl.json
 
 RUN chown -R istio-proxy /var/lib/istio
 
-ARG PROXY_VERSION
-ARG VERSION
+ADD https://github.com/querycap/istio-envoy-arm64/releases/download/${VERSION}/envoy /usr/local/bin/envoy
 
-COPY --from=envoy /envoy/envoy/envoy /usr/local/bin/envoy
-RUN chmod a+x /usr/local/bin/envoy
-
-ENV ISTIO_META_ISTIO_PROXY_SHA istio-proxy:${ISTIO_ENVOY_SHA}
-ENV ISTIO_META_VERSION $VERSION
+RUN chmod +x /usr/local/bin/envoy && \
+    export ISTIO_META_VERSION=${VERSION} && \
+    export ISTIO_META_ISTIO_PROXY_SHA="istio-proxy:$(/usr/local/bin/envoy --version | grep version | sed -e 's/.*version\: //g')"
 
 COPY --from=binary /usr/local/bin/pilot-agent /usr/local/bin/pilot-agent
 COPY --from=binary /var/lib/istio/envoy/envoy_policy.yaml.tmpl /var/lib/istio/envoy/envoy_policy.yaml.tmpl

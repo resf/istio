@@ -8,22 +8,14 @@
 
 ### AMD64 
 
-just pick from `istio/*:1.6.1`
+just pick from `istio/*:1.6.3`
 
 ### ARM64
 
-updates istio build configration https://github.com/morlay/istio/tree/buildx-1.6.1
+updates istio build configration https://github.com/morlay/istio/tree/buildx-1.6.3
 
  * for compiling go files to arm64 version
  * on buildx branch run `TARGET_ARCH=arm64 BUILD_WITH_CONTAINER=1 HUB=querycapistio make dockerx.pushx` to compile and sync to docker.io as tmp image
     * in `proxyv2`, copy a arm64 `envoy` form `querycapistio/istio-enovy:1.6.1-arm64 /envoy/enovy/enovy`
     * other files from the tmp image
     * need to recreate the base image, because the istio/base only amd64 version
-
-#### Stages
-
-1. ![istio-envoy](https://github.com/querycap/istio/workflows/istio-envoy/badge.svg)
-    * ![hsdis](https://github.com/querycap/istio/workflows/hsdis/badge.svg)
-    * ![build-env](https://github.com/querycap/istio/workflows/build-env/badge.svg)
-2. ![istio-arm64-binaries](https://github.com/querycap/istio/workflows/istio-arm64-binaries/badge.svg)
-3. ![istios](https://github.com/querycap/istio/workflows/istios/badge.svg)
