@@ -4,7 +4,7 @@ ARG BASE=default
 FROM ${BINARY} as binary
 FROM ${BASE}
 
-ARG VERSION=1.6.1
+ARG VERSION=1.6.3
 
 COPY --from=binary /var/lib/istio/envoy/envoy_bootstrap_tmpl.json /var/lib/istio/envoy/envoy_bootstrap_tmpl.json
 COPY --from=binary /var/lib/istio/envoy/gcp_envoy_bootstrap_tmpl.json /var/lib/istio/envoy/gcp_envoy_bootstrap_tmpl.json

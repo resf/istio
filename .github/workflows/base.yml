@@ -3,8 +3,8 @@ name: base
 on:
   push:
     paths:
-      - '.github/workflows/istios.yml'
-      - 'istios/**'
+      - '.github/workflows/base.yml'
+      - 'base/**'
 
 jobs:
   build:
