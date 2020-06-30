@@ -3,9 +3,9 @@ HUB=querycapistio
 
 build:
 	HUB=${HUB} VERSION=${VERSION} docker buildx bake -f ./bake.hcl --push
-	./join.sh ${HUB}/proxyv2 ${VERSION}
-	./join.sh ${HUB}/pilot ${VERSION}
-	./join.sh ${HUB}/operator ${VERSION}
+	./scripts/join.sh ${HUB}/proxyv2 ${VERSION}
+	./scripts/join.sh ${HUB}/pilot ${VERSION}
+	./scripts/join.sh ${HUB}/operator ${VERSION}
 
 build-binaries:
 	git clone https://github.com/morlay/istio .tmp/istio
