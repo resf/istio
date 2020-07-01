@@ -1,10 +1,12 @@
-ARG BINARY=querycapistio/pilot:latest-arm64
-ARG BASE=default
+ARG VERSION
+ARG BASE_DISTRIBUTION=default
 
-FROM ${BINARY} as binary
-FROM ${BASE}
+FROM istio/pilot:${VERSION} as pilot
+FROM ${BASE_DISTRIBUTION}
 
-COPY --from=binary /usr/local/bin/pilot-discovery /usr/local/bin/pilot-discovery
-COPY --from=binary /cacert.pem /cacert.pem
+COPY ./bin/pilot-discovery /usr/local/bin/pilot-discovery
+COPY --from=pilot /cacert.pem /cacert.pem
+
+USER 1337:1337
 
 ENTRYPOINT ["/usr/local/bin/pilot-discovery"]

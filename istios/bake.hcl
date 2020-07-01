@@ -47,8 +47,7 @@ target "proxyv2-arm64" {
     "${HUB}/proxyv2:${VERSION}-arm64"
   ]
   args = {
-    BASE = "${HUB}/base:${BASE_VERSION}"
-    BINARY = "${HUB}/proxyv2:${VERSION}-binary-arm64"
+    BASE_DISTRIBUTION = "${HUB}/base:${BASE_VERSION}"
     VERSION = "${VERSION}"
   }
   platforms = [
@@ -62,8 +61,7 @@ target "pilot-arm64" {
     "${HUB}/pilot:${VERSION}-arm64"
   ]
   args = {
-    BASE = "${HUB}/base:${BASE_VERSION}"
-    BINARY = "${HUB}/pilot:${VERSION}-binary-arm64"
+    BASE_DISTRIBUTION = "${HUB}/base:${BASE_VERSION}"
     VERSION = "${VERSION}"
   }
   platforms = [
@@ -76,8 +74,7 @@ target "operator-arm64" {
     "${HUB}/operator:${VERSION}-arm64"
   ]
   args = {
-    BASE = "${HUB}/base:${BASE_VERSION}"
-    BINARY = "${HUB}/operator:${VERSION}-binary-arm64"
+    BASE_DISTRIBUTION = "${HUB}/base:${BASE_VERSION}"
     VERSION = "${VERSION}"
   }
   platforms = [
