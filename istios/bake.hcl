@@ -7,7 +7,7 @@ variable HUB {
 }
 
 variable BASE_VERSION {
-  default = "2020-06-29"
+  default = "2020-07-10"
 }
 
 group "default" {
