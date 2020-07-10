@@ -1,7 +1,14 @@
-FROM ubuntu:bionic as base
+FROM ubuntu:bionic
+# Base image for debug builds.
+# Built manually uploaded as "istionightly/base_debug"
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Do not add more stuff to this list that isn't small or critically useful.
+# If you occasionally need something on the container do
+# sudo apt-get update && apt-get whichever
+
+# hadolint ignore=DL3005,DL3008
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
       ca-certificates \
@@ -23,4 +30,4 @@ RUN apt-get update && \
 
 # Sudoers used to allow tcpdump and other debug utilities.
 RUN useradd -m --uid 1337 istio-proxy && \
-    echo "istio-proxy ALL=NOPASSWD: ALL" >> /etc/sudoer
+    echo "istio-proxy ALL=NOPASSWD: ALL" >> /etc/sudoers
