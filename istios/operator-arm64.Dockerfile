@@ -7,6 +7,4 @@ FROM ${BASE_DISTRIBUTION}
 COPY ./bin/operator /usr/local/bin/operator
 COPY --from=operator /var/lib/istio/manifests/ /var/lib/istio/manifests/
 
-USER 1337:1337
-
 ENTRYPOINT ["/usr/local/bin/operator"]
