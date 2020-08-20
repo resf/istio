@@ -2,6 +2,10 @@ variable VERSION {
   default = "1.6.3"
 }
 
+variable ENVOY_VERSION {
+  default = ""
+}
+
 variable HUB {
   default = "istio"
 }
@@ -49,6 +53,7 @@ target "proxyv2-arm64" {
   args = {
     BASE_DISTRIBUTION = "${HUB}/base:${BASE_VERSION}"
     VERSION = "${VERSION}"
+    ENVOY_VERSION = "${ENVOY_VERSION}"
   }
   platforms = [
     "linux/arm64"

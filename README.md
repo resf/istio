@@ -1,11 +1,6 @@
 # istio OCI Images 
 
 ```
-VERSION=1.6.3
-VERSION=1.6.4
-VERSION=1.6.5
-VERSION=1.6.6
-VERSION=1.6.7
 VERSION=1.6.8
 ```
 
