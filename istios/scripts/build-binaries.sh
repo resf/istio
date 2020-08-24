@@ -18,4 +18,4 @@ docker run \
   -v ${PWD}/../../scripts:/tmp/scripts \
   -v ${PWD}:/go/src/istio.io/istio \
   --workdir /go/src/istio.io/istio \
-  golang:1.14 /tmp/scripts/gobuild.sh
+  golang:1.15 /tmp/scripts/gobuild.sh
