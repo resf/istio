@@ -4,7 +4,8 @@ on:
   push:
     paths:
       - '.github/workflows/jaegertracing.yml'
-      - 'jaegertracing/'
+      - 'jaegertracing/**'
+      - '_sync/**'
 
 jobs:
   build:
