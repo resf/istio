@@ -5,23 +5,23 @@
 
 | Name | Docker Image | Architecture | 
 |------|--------------|--------------|
-| querycapistio/proxyv2:${VERSION} | [![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/proxyv2)](https://hub.docker.com/r/querycapistio/proxyv2) | `arm64/amd64` | 
-| querycapistio/pilot:${VERSION} | [![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/pilot)](https://hub.docker.com/r/querycapistio/pilot) | `arm64/amd64` |
-| querycapistio/operator:${VERSION} | [![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/operator)](https://hub.docker.com/r/querycapistio/operator) | `arm64/amd64` |
+| `querycapistio/proxyv2:${VERSION}` | [![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/proxyv2)](https://hub.docker.com/r/querycapistio/proxyv2) | `arm64/amd64` | 
+| `querycapistio/pilot:${VERSION}` | [![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/pilot)](https://hub.docker.com/r/querycapistio/pilot) | `arm64/amd64` |
+| `querycapistio/operator:${VERSION}` | [![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/operator)](https://hub.docker.com/r/querycapistio/operator) | `arm64/amd64` |
 
 
 ## `querycap/kiali:{v1.22.1}`
 
 | Name | Docker Image | Architecture | 
 |------|--------------|--------------|
-| querycap/kiali:${VERSION} | [![Docker Pulls](https://img.shields.io/docker/pulls/querycap/kiali)](https://hub.docker.com/r/querycap/kiali) | `arm64/amd64` | 
+| `querycap/kiali:${VERSION}` | [![Docker Pulls](https://img.shields.io/docker/pulls/querycap/kiali)](https://hub.docker.com/r/querycap/kiali) | `arm64/amd64` | 
 
 
 ## `querycapjaegertracing/all-in-one:{1.18.1}`
 
 | Name | Docker Image | Architecture | 
 |------|--------------|--------------|
-| querycapjaegertracing/all-in-one:${VERSION} | [![Docker Pulls](https://img.shields.io/docker/pulls/querycapjaegertracing/all-in-one)](https://hub.docker.com/r/querycapjaegertracing/all-in-one) | `arm64/amd64` | 
+| `querycapjaegertracing/all-in-one:${VERSION}` | [![Docker Pulls](https://img.shields.io/docker/pulls/querycapjaegertracing/all-in-one)](https://hub.docker.com/r/querycapjaegertracing/all-in-one) | `arm64/amd64` | 
 
 
 ### How to build istio images?
