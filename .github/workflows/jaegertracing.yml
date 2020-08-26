@@ -10,10 +10,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - uses: crazy-max/ghaction-docker-buildx@v3
         with:
           buildx-version: v0.4.2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "14"
       - run: |
           cat > ~/.docker/config.json << EOF
           ${{ secrets.DOCKER_CONFIG }}
