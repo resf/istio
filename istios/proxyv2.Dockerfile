@@ -1,15 +1,15 @@
 ARG VERSION
 ARG BASE_DISTRIBUTION=default
 
-FROM istio/proxyv2:${VERSION} as proxyv2
+FROM istio/proxyv2:${VERSION} as proxyv2-amd64
 
-FROM ${BASE_DISTRIBUTION}
+FROM ${BASE_DISTRIBUTION} as proxyv2-arm64
 
 ARG VERSION=1.6.3
 ARG ENVOY_VERSION=""
 
-COPY --from=proxyv2 /var/lib/istio/envoy/ /var/lib/istio/envoy/
-COPY --from=proxyv2 /etc/istio/extensions/ /etc/istio/extensions/
+COPY --from=proxyv2-amd64 /var/lib/istio/envoy/ /var/lib/istio/envoy/
+COPY --from=proxyv2-amd64 /etc/istio/extensions/ /etc/istio/extensions/
 
 RUN chown -R istio-proxy /var/lib/istio
 
@@ -26,3 +26,5 @@ COPY ./bin/pilot-agent /usr/local/bin/pilot-agent
 
 # The pilot-agent will bootstrap Envoy.
 ENTRYPOINT ["/usr/local/bin/pilot-agent"]
+
+FROM proxyv2-${TARGETARCH}
