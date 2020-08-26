@@ -4,20 +4,18 @@ FROM golang:1.15 as builder
 
 ARG VERSION
 
-RUN set -eux; \
-    \
-    apt-get update; \
-    apt-get install -y git nodejs npm;
-
 RUN git clone --depth=1 -b v${VERSION} https://github.com/jaegertracing/jaeger.git /go/src/github.com/jaegertracing/jaeger;
 
 WORKDIR /go/src/github.com/jaegertracing/jaeger
 
-RUN npm install -g yarn
 RUN go get -u github.com/mjibson/esc
-
 RUN git submodule update --init
-RUN make build-ui
+
+COPY ./jaeger-ui/packages/jaeger-ui/build ./jaeger-ui/packages/jaeger-ui/build
+
+RUN esc -pkg assets -o cmd/query/app/ui/actual/gen_assets.go -prefix jaeger-ui/packages/jaeger-ui/build jaeger-ui/packages/jaeger-ui/build
+RUN esc -pkg assets -o cmd/query/app/ui/placeholder/gen_assets.go -prefix cmd/query/app/ui/placeholder/public cmd/query/app/ui/placeholder/public
+
 RUN make build-all-in-one GOOS=$(go env GOOS) GOARCH=$(go env GOARCH)
 
 FROM alpine:latest as certs
