@@ -15,4 +15,4 @@ jobs:
         with:
           buildx-version: v0.4.1
       - run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-      - run: make build
+      - run: cd kiali && make build
