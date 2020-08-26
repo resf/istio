@@ -173,4 +173,4 @@ spec:
         persist: false
         spanStorageType: badger
         storageClassName: ""
-        tag: "latest"
+        tag: "1.18.1"
