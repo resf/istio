@@ -1,10 +1,14 @@
 VERSION=$(shell cat .version)
-HUB=querycap
+HUB=querycapistio
+IMAGE=${HUB}/kiali:${VERSION}
 
 build:
 	docker buildx build \
 		--push \
 		--platform linux/arm64,linux/amd64 \
 		--build-arg VERSION=${VERSION} \
-		--tag ${HUB}/kiali:${VERSION} \
+		--tag ${IMAGE} \
 		--file Dockerfile .
+
+sync:
+	cd ../_sync && make -e IMAGE=${IMAGE} sync-image

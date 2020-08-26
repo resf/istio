@@ -13,6 +13,10 @@ jobs:
       - uses: actions/checkout@v1
       - uses: crazy-max/ghaction-docker-buildx@v3
         with:
-          buildx-version: v0.4.1
-      - run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          buildx-version: v0.4.2
+      - run: |
+          cat > ~/.docker/config.json << EOF
+          ${{ secrets.DOCKER_CONFIG }}
+          EOF
       - run: cd jaegertracing && make build
+      - run: cd jaegertracing && make sync

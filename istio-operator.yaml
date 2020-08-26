@@ -4,7 +4,7 @@ metadata:
   name: installed-state
   namespace: istio-system
 spec:
-  hub: docker.io/querycapistio
+  hub: querycapistio
   tag: 1.7.0
   addonComponents:
     grafana:
@@ -162,12 +162,12 @@ spec:
         name: istio-ingressgateway
   values:
     kiali:
-      hub: querycap
+      hub: querycapistio
       tag: v1.22.1
     tracing:
       jaeger:
         accessMode: ReadWriteMany
-        hub: docker.io/querycapjaegertracing
+        hub: querycapistio
         memory:
           max_traces: 50000
         persist: false

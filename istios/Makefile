@@ -10,3 +10,8 @@ build:
 
 build-binaries:
 	HUB=${HUB} VERSION=${VERSION} ./scripts/build-binaries.sh
+
+sync:
+	cd ../_sync && make -e IMAGE=${HUB}/proxyv2:${VERSION} sync-image
+	cd ../_sync && make -e IMAGE=${HUB}/pilot:${VERSION} sync-image
+	cd ../_sync && make -e IMAGE=${HUB}/operator:${VERSION} sync-image

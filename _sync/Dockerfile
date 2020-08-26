@@ -1,0 +1,3 @@
+ARG IMAGE
+FROM ${IMAGE}
+
