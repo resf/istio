@@ -1,0 +1,176 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  name: installed-state
+  namespace: istio-system
+spec:
+  hub: docker.io/querycapistio
+  tag: 1.7.0
+  addonComponents:
+    grafana:
+      enabled: true
+      k8s:
+        replicaCount: 1
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: beta.kubernetes.io/arch
+                      operator: In
+                      values:
+                        - arm64
+                        - amd64
+    kiali:
+      enabled: true
+      k8s:
+        replicaCount: 1
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: beta.kubernetes.io/arch
+                      operator: In
+                      values:
+                        - arm64
+                        - amd64
+    tracing:
+      enabled: true
+      k8s:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: beta.kubernetes.io/arch
+                      operator: In
+                      values:
+                        - arm64
+                        - amd64
+  components:
+    egressGateways:
+      - enabled: true
+        k8s:
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: beta.kubernetes.io/arch
+                        operator: In
+                        values:
+                          - arm64
+                          - amd64
+          env:
+            - name: ISTIO_META_ROUTER_MODE
+              value: sni-dnat
+          hpaSpec:
+            maxReplicas: 5
+            metrics:
+              - resource:
+                  name: cpu
+                  targetAverageUtilization: 80
+                type: Resource
+            minReplicas: 1
+            scaleTargetRef:
+              apiVersion: apps/v1
+              kind: Deployment
+              name: istio-egressgateway
+          resources:
+            limits:
+              cpu: 2000m
+              memory: 1024Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          service:
+            ports:
+              - name: http2
+                port: 80
+              - name: https
+                port: 443
+              - name: tls
+                port: 15443
+                targetPort: 15443
+          strategy:
+            rollingUpdate:
+              maxSurge: 100%
+              maxUnavailable: 25%
+        name: istio-egressgateway
+    ingressGateways:
+      - enabled: true
+        k8s:
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: beta.kubernetes.io/arch
+                        operator: In
+                        values:
+                          - arm64
+                          - amd64
+          env:
+            - name: ISTIO_META_ROUTER_MODE
+              value: sni-dnat
+          hpaSpec:
+            maxReplicas: 5
+            metrics:
+              - resource:
+                  name: cpu
+                  targetAverageUtilization: 80
+                type: Resource
+            minReplicas: 1
+            scaleTargetRef:
+              apiVersion: apps/v1
+              kind: Deployment
+              name: istio-ingressgateway
+          resources:
+            limits:
+              cpu: 2000m
+              memory: 1024Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          service:
+            ports:
+              - name: status-port
+                nodePort: 32758
+                port: 15021
+                protocol: TCP
+                targetPort: 15021
+              - name: http2
+                nodePort: 30113
+                port: 80
+                protocol: TCP
+                targetPort: 8080
+              - name: https
+                nodePort: 31438
+                port: 443
+                protocol: TCP
+                targetPort: 8443
+              - name: tls
+                nodePort: 31127
+                port: 15443
+                protocol: TCP
+                targetPort: 15443
+          strategy:
+            rollingUpdate:
+              maxSurge: 100%
+              maxUnavailable: 25%
+        name: istio-ingressgateway
+  values:
+    kiali:
+      hub: querycap
+      tag: v1.22.1
+    tracing:
+      jaeger:
+        accessMode: ReadWriteMany
+        hub: docker.io/querycapjaegertracing
+        memory:
+          max_traces: 50000
+        persist: false
+        spanStorageType: badger
+        storageClassName: ""
+        tag: "latest"
