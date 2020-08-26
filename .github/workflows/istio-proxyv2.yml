@@ -1,0 +1,23 @@
+name: istio-proxyv2
+
+on:
+  push:
+    paths:
+      - '.github/workflows/istio-proxyv2.yml'
+      - 'istios/**'
+      - '_sync/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: crazy-max/ghaction-docker-buildx@v3
+        with:
+          buildx-version: v0.4.2
+      - run: |
+          cat > ~/.docker/config.json << EOF
+          ${{ secrets.DOCKER_CONFIG }}
+          EOF
+      - run: cd istios && make build.proxyv2
+      - run: cd istios && make sync.proxyv2

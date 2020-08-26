@@ -1,9 +1,9 @@
-name: istios
+name: istio-operator
 
 on:
   push:
     paths:
-      - '.github/workflows/istios.yml'
+      - '.github/workflows/istio-operator.yml'
       - 'istios/**'
       - '_sync/**'
 
@@ -19,6 +19,5 @@ jobs:
           cat > ~/.docker/config.json << EOF
           ${{ secrets.DOCKER_CONFIG }}
           EOF
-      - run: cd istios && make build-binaries
-      - run: cd istios && make build
-      - run: cd istios && make sync
+      - run: cd istios && make build.operator
+      - run: cd istios && make sync.operator
