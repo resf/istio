@@ -14,14 +14,14 @@
 
 | Name | Docker Image | Architecture | 
 |------|--------------|--------------|
-| `querycapistio/kiali:${VERSION}` | [![Docker Pulls](https://img.shields.io/docker/pulls/querycap/kiali)](https://hub.docker.com/r/querycap/kiali) | `arm64/amd64` | 
+| `querycapistio/kiali:${VERSION}` | [![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/kiali)](https://hub.docker.com/r/querycapistio/kiali) | `arm64/amd64` | 
 
 
-## `querycapistio/all-in-one:{1.18.1}`
+## jaegertracing `querycapistio/all-in-one:{1.18.1}`
 
 | Name | Docker Image | Architecture | 
 |------|--------------|--------------|
-| `querycapistio/all-in-one:${VERSION}` | [![Docker Pulls](https://img.shields.io/docker/pulls/querycapjaegertracing/all-in-one)](https://hub.docker.com/r/querycapjaegertracing/all-in-one) | `arm64/amd64` | 
+| `querycapistio/all-in-one:${VERSION}` | [![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/all-in-one)](https://hub.docker.com/r/querycapistio/all-in-one) | `arm64/amd64` | 
 
 
 ### How to build istio images?
