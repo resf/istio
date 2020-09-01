@@ -1,8 +1,10 @@
+# syntax = docker/dockerfile:experimental
+
 ARG VERSION
 
 FROM quay.io/kiali/kiali:${VERSION} as console
 
-FROM golang:1.14 as builder
+FROM golang:1.15 as builder
 
 ARG VERSION
 
@@ -15,7 +17,7 @@ RUN git clone --depth=1 -b ${VERSION} https://github.com/kiali/kiali.git /go/src
 
 WORKDIR /go/src/github.com/kiali/kiali
 
-RUN make build
+RUN --mount=type=cache,id=gomod,target=/go/pkg/mod make build
 
 FROM registry.access.redhat.com/ubi8-minimal
 
