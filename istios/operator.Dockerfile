@@ -1,3 +1,5 @@
+# syntax = docker/dockerfile:experimental
+
 ARG VERSION
 ARG BASE_DISTRIBUTION=default
 
@@ -16,7 +18,8 @@ RUN GO111MODULE=on go get github.com/jteeuwen/go-bindata/go-bindata@6025e8de665b
 RUN ./operator/scripts/create_assets_gen.sh
 
 # build operator
-RUN STATIC=0 \
+RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
+    STATIC=0 \
     GOOS=$(go env GOOS) \
     GOARCH=$(go env GOARCH) \
     LDFLAGS='-extldflags -static -s -w' \

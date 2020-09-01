@@ -1,3 +1,5 @@
+# syntax = docker/dockerfile:experimental
+
 ARG VERSION
 ARG BASE_DISTRIBUTION=default
 
@@ -12,7 +14,8 @@ RUN git clone --depth=1 -b ${VERSION} https://github.com/istio/istio /go/src/ist
 WORKDIR /go/src/istio.io/istio
 
 # build pilot-discovery
-RUN STATIC=0 \
+RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
+    STATIC=0 \
     GOOS=$(go env GOOS) \
     GOARCH=$(go env GOARCH) \
     LDFLAGS='-extldflags -static -s -w' \
