@@ -1,7 +1,7 @@
 # Istio OCI Images 
 
 
-## `querycapistio/{proxyv2,pilot,operator}:{1.6.8,1.7.0}`
+## `querycapistio/{proxyv2,pilot,operator}:{1.6.8,1.7.0,1.7.1}`
 
 | Name | Docker Image | Architecture | 
 |------|--------------|--------------|
