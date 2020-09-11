@@ -13,6 +13,9 @@ ARG GOPROXY=https://goproxy.io,direct
 RUN git clone --depth=1 -b ${VERSION} https://github.com/istio/istio /go/src/istio.io/istio
 WORKDIR /go/src/istio.io/istio
 
+# important for https://github.com/istio/istio/blob/master/common/scripts/report_build_info.sh#L42
+ENV VERSION ${VERSION}
+
 # build pilot-discovery
 RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
     STATIC=0 \

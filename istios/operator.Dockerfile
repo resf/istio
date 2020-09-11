@@ -17,6 +17,9 @@ WORKDIR /go/src/istio.io/istio
 RUN GO111MODULE=on go get github.com/jteeuwen/go-bindata/go-bindata@6025e8de665b
 RUN ./operator/scripts/create_assets_gen.sh
 
+# important for https://github.com/istio/istio/blob/master/common/scripts/report_build_info.sh#L42
+ENV VERSION ${VERSION}
+
 # build operator
 RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
     STATIC=0 \
