@@ -125,7 +125,7 @@ spec:
   values:
     kiali:
       hub: querycapistio
-      tag: v1.22.1
+      tag: v1.23.0
     tracing:
       jaeger:
         accessMode: ReadWriteMany
@@ -135,4 +135,4 @@ spec:
         persist: false
         spanStorageType: badger
         storageClassName: ""
-        tag: 1.18.1
+        tag: 1.19.2

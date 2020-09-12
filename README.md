@@ -1,7 +1,7 @@
 # Istio OCI Images 
 
 
-## `querycapistio/{proxyv2,pilot,operator}:{1.6.8,1.7.1}`
+## `querycapistio/{proxyv2,pilot,operator}:{1.7.1}`
 
 | Name | Docker Image | Architecture | 
 |------|--------------|--------------|
@@ -10,14 +10,14 @@
 | `querycapistio/operator:${VERSION}` | [![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/operator)](https://hub.docker.com/r/querycapistio/operator) | `arm64/amd64` |
 
 
-## `querycapistio/kiali:{v1.22.1}`
+## [kiali](https://github.com/kiali/kiali) `querycapistio/kiali:{v1.23.0}`
 
 | Name | Docker Image | Architecture | 
 |------|--------------|--------------|
 | `querycapistio/kiali:${VERSION}` | [![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/kiali)](https://hub.docker.com/r/querycapistio/kiali) | `arm64/amd64` | 
 
 
-## jaegertracing `querycapistio/all-in-one:{1.18.1}`
+## [jaegertracing](https://github.com/jaegertracing/jaeger) `querycapistio/all-in-one:{1.19.2}`
 
 | Name | Docker Image | Architecture | 
 |------|--------------|--------------|
