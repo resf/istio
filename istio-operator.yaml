@@ -125,7 +125,7 @@ spec:
   values:
     kiali:
       hub: querycapistio
-      tag: v1.23.0
+      tag: 1.23.0
     tracing:
       jaeger:
         accessMode: ReadWriteMany

@@ -10,7 +10,7 @@
 | `querycapistio/operator:${VERSION}` | [![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/operator)](https://hub.docker.com/r/querycapistio/operator) | `arm64/amd64` |
 
 
-## [kiali](https://github.com/kiali/kiali) `querycapistio/kiali:{v1.23.0}`
+## [kiali](https://github.com/kiali/kiali) `querycapistio/kiali:{1.23.0}`
 
 | Name | Docker Image | Architecture | 
 |------|--------------|--------------|

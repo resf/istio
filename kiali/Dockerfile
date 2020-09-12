@@ -2,7 +2,7 @@
 
 ARG VERSION
 
-FROM quay.io/kiali/kiali:${VERSION} as console
+FROM quay.io/kiali/kiali:v${VERSION} as console
 
 FROM golang:1.15 as builder
 
@@ -13,7 +13,7 @@ RUN set -eux; \
     apt-get update; \
     apt-get install git;
 
-RUN git clone --depth=1 -b ${VERSION} https://github.com/kiali/kiali.git /go/src/github.com/kiali/kiali;
+RUN git clone --depth=1 -b v${VERSION} https://github.com/kiali/kiali.git /go/src/github.com/kiali/kiali;
 
 WORKDIR /go/src/github.com/kiali/kiali
 
