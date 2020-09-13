@@ -126,6 +126,9 @@ spec:
     kiali:
       hub: querycapistio
       tag: 1.23.0
+      dashboard:
+        auth:
+          strategy: anonymous
     tracing:
       jaeger:
         accessMode: ReadWriteMany
