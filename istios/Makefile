@@ -1,5 +1,5 @@
-VERSION=$(shell cat .version)
-ENVOY_VERSION=$(shell cat .envoy-version)
+VERSION=$(shell cat Dockerfile.version | grep "^FROM " | sed -e "s/FROM.*:v\{0,\}//g" )
+ENVOY_VERSION=$(shell docker inspect $(shell docker create istio/proxyv2:$(VERSION)) --format "{{ json .Config.Env }}" | sed -e 's/.*"ISTIO_META_ISTIO_PROXY_SHA=\([^"]*\)".*/\1/g')
 
 HUB=querycapistio
 BASE_DISTRIBUTION=${HUB}/base:$(shell cat ../base/.version)
@@ -33,3 +33,7 @@ build-image:
 	--build-arg ENVOY_VERSION=${ENVOY_VERSION} \
 	--tag "${HUB}/${IMAGE}:${VERSION}" \
 	--file ${IMAGE}.Dockerfile .
+
+version:
+	@echo "VERSION: $(VERSION)"
+	@echo "ENVOY_VERSION: $(ENVOY_VERSION)"
