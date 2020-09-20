@@ -37,7 +37,7 @@ ARG VERSION=1.6.3
 ARG ENVOY_VERSION=""
 
 # copy envoy
-CMD --from envoy /envoy/envoy /usr/local/bin/envoy
+COPY --from=envoy /envoy/envoy /usr/local/bin/envoy
 
 # important for metrics
 ENV ISTIO_META_ISTIO_PROXY_SHA ${ENVOY_VERSION}
