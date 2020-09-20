@@ -4,7 +4,7 @@ HUB = querycapistio
 NAME ?= operator
 TARGET_PLATFORM = linux/arm64,linux/amd64
 
-build:
+build: sync-docker-base
 	docker buildx build \
 	--push \
 	--platform=$(TARGET_PLATFORM) \
@@ -13,6 +13,9 @@ build:
 	--build-arg BASE_DISTRIBUTION=$(HUB)/base:$(VERSION) \
 	--tag "$(HUB)/$(NAME):$(VERSION)" \
 	--file Dockerfile.$(NAME) .
+
+sync-docker-base:
+	wget -O Dockerfile.base https://raw.githubusercontent.com/istio/istio/$(VERSION)/docker/Dockerfile.base
 
 version:
 	@echo "VERSION: $(VERSION)"
