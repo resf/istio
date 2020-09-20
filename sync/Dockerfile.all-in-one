@@ -1,0 +1,1 @@
+FROM querycapistio/all-in-one:1.19.2

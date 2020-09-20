@@ -1,12 +1,14 @@
-name: jaegertracing
+name: sync-kiali
 "on":
   push:
     paths:
-    - docker/jaegertracing/*
+    - sync/Dockerfile.kiali
 jobs:
-  all-in-one:
+  sync:
     runs-on:
-    - ubuntu-latest
+    - self-hosted
+    - linux
+    - ARM64
     steps:
     - uses: actions/checkout@v2
     - uses: docker/setup-qemu-action@v1
@@ -16,4 +18,4 @@ jobs:
         cat > ~/.docker/config.json << EOF
         ${{ secrets.DOCKER_CONFIG }}
         EOF
-    - run: cd docker/jaegertracing && NAME=all-in-one make build
+    - run: cd sync && NAME=kiali make sync

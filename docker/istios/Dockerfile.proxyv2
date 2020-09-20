@@ -24,16 +24,20 @@ RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
     LDFLAGS='-extldflags -static -s -w' \
     common/scripts/gobuild.sh /go/bin/ ./pilot/cmd/pilot-agent
 
+ARG VERSION=1.6.3
+
+# built on arm64 hosts
+# see more https://github.com/querycap/istio-envoy-arm64
+FROM querycapistio/istio-envoy-arm64:${VERSION} as envoy
+
 # https://github.com/istio/istio/blob/master/pilot/docker/Dockerfile.proxyv2
 FROM ${BASE_DISTRIBUTION} as proxyv2-arm64
 
 ARG VERSION=1.6.3
 ARG ENVOY_VERSION=""
 
-# add envoy
-# built on arm64 hosts
-# see more https://github.com/querycap/istio-envoy-arm64
-ADD https://github.com/querycap/istio-envoy-arm64/releases/download/${VERSION}/envoy /usr/local/bin/envoy
+# copy envoy
+CMD --from envoy /envoy/envoy /usr/local/bin/envoy
 
 # important for metrics
 ENV ISTIO_META_ISTIO_PROXY_SHA ${ENVOY_VERSION}
