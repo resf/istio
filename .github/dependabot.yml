@@ -1,0 +1,26 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "docker"
+    directory: "/sync"
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "docker"
+    directory: "/docker/istios"
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "docker"
+    directory: "/docker/jaegertracing"
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "docker"
+    directory: "/docker/kiali"
+    schedule:
+      interval: "daily"
