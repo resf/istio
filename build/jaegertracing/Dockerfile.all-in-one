@@ -1,4 +1,5 @@
-ARG VERSION
+ARG JAGGER_UI
+FROM ${JAGGER_UI} as jagger-ui
 
 FROM golang:1.15 as builder
 
@@ -11,7 +12,7 @@ WORKDIR /go/src/github.com/jaegertracing/jaeger
 RUN go get -u github.com/mjibson/esc
 RUN git submodule update --init
 
-COPY ./jaeger-ui/packages/jaeger-ui/build ./jaeger-ui/packages/jaeger-ui/build
+COPY --from=jagger-ui /jaeger-ui ./jaeger-ui/packages/jaeger-ui/build
 
 RUN esc -pkg assets -o cmd/query/app/ui/actual/gen_assets.go -prefix jaeger-ui/packages/jaeger-ui/build jaeger-ui/packages/jaeger-ui/build
 RUN esc -pkg assets -o cmd/query/app/ui/placeholder/gen_assets.go -prefix cmd/query/app/ui/placeholder/public cmd/query/app/ui/placeholder/public

@@ -1,11 +1,11 @@
-name: kiali
+name: istios-proxyv2
 "on":
   push:
     paths:
-    - build/kiali/Dockerfile.kiali
-    - build/kiali/Dockerfile.version
+    - build/istios/Dockerfile.proxyv2
+    - build/istios/Dockerfile.version
 jobs:
-  kiali:
+  proxyv2:
     runs-on:
     - ubuntu-latest
     steps:
@@ -18,7 +18,7 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
     - name: Versioned Build
       if: github.ref == 'refs/heads/master'
-      run: cd build/kiali && make build HUB=querycapistio NAME=kiali
+      run: cd build/istios && make build HUB=querycapistio NAME=proxyv2
     - name: Temp Build
       if: github.ref != 'refs/heads/master'
-      run: cd build/kiali && make build HUB=querycapistio NAME=kiali TAG=temp-${{ github.sha }}
+      run: cd build/istios && make build HUB=querycapistio NAME=proxyv2 TAG=temp-${{ github.sha }}

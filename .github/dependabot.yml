@@ -11,16 +11,16 @@ updates:
       interval: "daily"
 
   - package-ecosystem: "docker"
-    directory: "/docker/istios"
+    directory: "/build/istios"
     schedule:
       interval: "daily"
 
   - package-ecosystem: "docker"
-    directory: "/docker/jaegertracing"
+    directory: "/build/jaegertracing"
     schedule:
       interval: "daily"
 
   - package-ecosystem: "docker"
-    directory: "/docker/kiali"
+    directory: "/build/kiali"
     schedule:
       interval: "daily"

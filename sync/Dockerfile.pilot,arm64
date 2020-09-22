@@ -1,0 +1,1 @@
+FROM querycapistio/pilot:1.7.2

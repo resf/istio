@@ -1,11 +1,11 @@
-name: kiali
+name: istios-pilot
 "on":
   push:
     paths:
-    - build/kiali/Dockerfile.kiali
-    - build/kiali/Dockerfile.version
+    - build/istios/Dockerfile.pilot
+    - build/istios/Dockerfile.version
 jobs:
-  kiali:
+  pilot:
     runs-on:
     - ubuntu-latest
     steps:
@@ -18,7 +18,7 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
     - name: Versioned Build
       if: github.ref == 'refs/heads/master'
-      run: cd build/kiali && make build HUB=querycapistio NAME=kiali
+      run: cd build/istios && make build HUB=querycapistio NAME=pilot
     - name: Temp Build
       if: github.ref != 'refs/heads/master'
-      run: cd build/kiali && make build HUB=querycapistio NAME=kiali TAG=temp-${{ github.sha }}
+      run: cd build/istios && make build HUB=querycapistio NAME=pilot TAG=temp-${{ github.sha }}

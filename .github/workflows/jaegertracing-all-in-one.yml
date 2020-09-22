@@ -1,11 +1,11 @@
-name: kiali
+name: jaegertracing-all-in-one
 "on":
   push:
     paths:
-    - build/kiali/Dockerfile.kiali
-    - build/kiali/Dockerfile.version
+    - build/jaegertracing/Dockerfile.all-in-one
+    - build/jaegertracing/Dockerfile.version
 jobs:
-  kiali:
+  all-in-one:
     runs-on:
     - ubuntu-latest
     steps:
@@ -18,7 +18,7 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
     - name: Versioned Build
       if: github.ref == 'refs/heads/master'
-      run: cd build/kiali && make build HUB=querycapistio NAME=kiali
+      run: cd build/jaegertracing && make build HUB=querycapistio NAME=all-in-one
     - name: Temp Build
       if: github.ref != 'refs/heads/master'
-      run: cd build/kiali && make build HUB=querycapistio NAME=kiali TAG=temp-${{ github.sha }}
+      run: cd build/jaegertracing && make build HUB=querycapistio NAME=all-in-one TAG=temp-${{ github.sha }}
