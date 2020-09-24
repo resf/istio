@@ -6,12 +6,7 @@ updates:
       interval: "daily"
 
   - package-ecosystem: "docker"
-    directory: "/sync"
-    schedule:
-      interval: "daily"
-
-  - package-ecosystem: "docker"
-    directory: "/build/istios"
+    directory: "/build/istio"
     schedule:
       interval: "daily"
 

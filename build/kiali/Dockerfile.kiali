@@ -7,6 +7,8 @@ FROM quay.io/kiali/kiali:v${VERSION} as console
 FROM golang:1.15 as builder
 
 ARG VERSION
+ARG GOPROXY=https://goproxy.io,direct
+ENV GOPROXY=${GOPROXY}
 
 RUN set -eux; \
     \

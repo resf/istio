@@ -4,6 +4,8 @@ FROM ${JAGGER_UI} as jagger-ui
 FROM golang:1.15 as builder
 
 ARG VERSION
+ARG GOPROXY=https://goproxy.io,direct
+ENV GOPROXY=${GOPROXY}
 
 RUN git clone --depth=1 -b v${VERSION} https://github.com/jaegertracing/jaeger.git /go/src/github.com/jaegertracing/jaeger;
 

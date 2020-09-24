@@ -1,18 +1,18 @@
-name: jaegertracing-all-in-one
+name: istio-pilot
 "on":
   push:
     paths:
-    - .github/workflows/jaegertracing.yml
-    - build/jaegertracing/Dockerfile.all-in-one
-    - build/jaegertracing/Dockerfile.version
-    - build/jaegertracing/Makefile
+    - .github/workflows/istio.yml
+    - build/istio/Dockerfile.pilot
+    - build/istio/Dockerfile.version
+    - build/istio/Makefile
 jobs:
-  all-in-one:
+  pilot:
     runs-on:
     - ubuntu-latest
     defaults:
       run:
-        working-directory: build/jaegertracing
+        working-directory: build/istio
     steps:
     - uses: actions/checkout@v2
     - uses: docker/setup-qemu-action@v1
@@ -23,20 +23,20 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
     - name: Versioned Build
       if: github.ref == 'refs/heads/master'
-      run: make build HUB=querycapistio NAME=all-in-one
+      run: make build HUB=querycapistio NAME=pilot
     - name: Temp Build
       if: github.ref != 'refs/heads/master'
-      run: make build TAG=temp-${{ github.sha }} HUB=querycapistio NAME=all-in-one
-  sync-all-in-one:
+      run: make build TAG=temp-${{ github.sha }} HUB=querycapistio NAME=pilot
+  sync-pilot:
     runs-on:
     - self-hosted
     - arm64
     needs:
-    - all-in-one
+    - pilot
     if: github.ref == 'refs/heads/master'
     defaults:
       run:
-        working-directory: build/jaegertracing
+        working-directory: build/istio
     steps:
     - uses: actions/checkout@v2
     - uses: docker/setup-qemu-action@v1
@@ -47,6 +47,6 @@ jobs:
         registry: ${{ secrets.DOCKER_MIRROR_REGISTRY }}
         username: ${{ secrets.DOCKER_MIRROR_USERNAME }}
     - run: |-
-        export TAG=$(make image HUB=querycapistio NAME=all-in-one)
+        export TAG=$(make image HUB=querycapistio NAME=pilot)
 
         docker buildx build --push --platform linux/arm64,linux/amd64 --tag ${{ secrets.DOCKER_MIRROR_REGISTRY }}/${TAG} --build-arg TAG=${TAG} --file ../Dockerfile.sync .

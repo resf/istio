@@ -9,6 +9,7 @@ FROM golang:1.15 as operator-arm64-builder
 
 ARG VERSION
 ARG GOPROXY=https://goproxy.io,direct
+ENV GOPROXY=${GOPROXY}
 
 RUN git clone --depth=1 -b ${VERSION} https://github.com/istio/istio /go/src/istio.io/istio
 WORKDIR /go/src/istio.io/istio

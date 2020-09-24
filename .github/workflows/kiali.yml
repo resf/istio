@@ -2,12 +2,17 @@ name: kiali
 "on":
   push:
     paths:
+    - .github/workflows/kiali.yml
     - build/kiali/Dockerfile.kiali
     - build/kiali/Dockerfile.version
+    - build/kiali/Makefile
 jobs:
   kiali:
     runs-on:
     - ubuntu-latest
+    defaults:
+      run:
+        working-directory: build/kiali
     steps:
     - uses: actions/checkout@v2
     - uses: docker/setup-qemu-action@v1
@@ -18,7 +23,30 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
     - name: Versioned Build
       if: github.ref == 'refs/heads/master'
-      run: cd build/kiali && make build HUB=querycapistio NAME=kiali
+      run: make build HUB=querycapistio NAME=kiali
     - name: Temp Build
       if: github.ref != 'refs/heads/master'
-      run: cd build/kiali && make build HUB=querycapistio NAME=kiali TAG=temp-${{ github.sha }}
+      run: make build TAG=temp-${{ github.sha }} HUB=querycapistio NAME=kiali
+  sync-kiali:
+    runs-on:
+    - self-hosted
+    - arm64
+    needs:
+    - kiali
+    if: github.ref == 'refs/heads/master'
+    defaults:
+      run:
+        working-directory: build/kiali
+    steps:
+    - uses: actions/checkout@v2
+    - uses: docker/setup-qemu-action@v1
+    - uses: docker/setup-buildx-action@v1
+    - uses: docker/login-action@v1
+      with:
+        password: ${{ secrets.DOCKER_MIRROR_PASSWORD }}
+        registry: ${{ secrets.DOCKER_MIRROR_REGISTRY }}
+        username: ${{ secrets.DOCKER_MIRROR_USERNAME }}
+    - run: |-
+        export TAG=$(make image HUB=querycapistio NAME=kiali)
+
+        docker buildx build --push --platform linux/arm64,linux/amd64 --tag ${{ secrets.DOCKER_MIRROR_REGISTRY }}/${TAG} --build-arg TAG=${TAG} --file ../Dockerfile.sync .

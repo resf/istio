@@ -3,9 +3,15 @@ HUB = querycapistio
 NAME = all-in-one
 TARGET_PLATFORM = linux/arm64,linux/amd64
 
+TAG = $(VERSION)
+IMAGE = $(HUB)/$(NAME):$(TAG)
+
+image:
+	@echo $(IMAGE)
+
 build: build-ui
 	$(MAKE) -f ../Makefile buildx \
-		TAGS=$(HUB)/$(NAME):$(VERSION) \
+		TAGS=$(IMAGE) \
 		BUILD_ARGS="VERSION=$(VERSION) JAGGER_UI=$(HUB)/jagger-ui:$(VERSION)" \
 		DOCKERFILE=Dockerfile.$(NAME)
 

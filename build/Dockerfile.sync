@@ -1,0 +1,2 @@
+ARG TAG
+FROM ${TAG}
