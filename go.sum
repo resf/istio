@@ -16,6 +16,12 @@ github.com/querycap/ci-infra v0.0.0-20200923072825-06b069915c73 h1:r9lNCTYJ6QaN8
 github.com/querycap/ci-infra v0.0.0-20200923072825-06b069915c73/go.mod h1:TKNX36IfW/tQ27TTCmOB9UsF5Fb5JITu+lR6LcM0RXY=
 github.com/querycap/ci-infra v0.0.0-20200924032456-64f37d1646b5 h1:6hNFH7sjdCM4BGVuu498+1w6SehL/iqhAac6mXTmSUM=
 github.com/querycap/ci-infra v0.0.0-20200924032456-64f37d1646b5/go.mod h1:ODC68EFw3ueH9Yolfw6aBs/+BJTZBRqLqO3KzbwPaOc=
+github.com/querycap/ci-infra v0.0.0-20200924054853-5d3d325038eb h1:MFvjiMbYYKDNP1USBAIaDkmBuzLcacvs0PD+Cw4ebWU=
+github.com/querycap/ci-infra v0.0.0-20200924054853-5d3d325038eb/go.mod h1:ODC68EFw3ueH9Yolfw6aBs/+BJTZBRqLqO3KzbwPaOc=
+github.com/querycap/ci-infra v0.0.0-20200924060443-7b1754f5efcd h1:VfMwTmAkTfrqwz0QQpqOaRT3tQzhl5UhiY2Mlp3IMbw=
+github.com/querycap/ci-infra v0.0.0-20200924060443-7b1754f5efcd/go.mod h1:ODC68EFw3ueH9Yolfw6aBs/+BJTZBRqLqO3KzbwPaOc=
+github.com/querycap/ci-infra v0.0.0-20200924065910-387f3bc23854 h1:1xM4YMtmdiC2tCXyUqnpwBI0ZqTrRjzVBPFdCbc9sRw=
+github.com/querycap/ci-infra v0.0.0-20200924065910-387f3bc23854/go.mod h1:ODC68EFw3ueH9Yolfw6aBs/+BJTZBRqLqO3KzbwPaOc=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/yaml.v2 v2.3.0 h1:clyUAQHOM3G0M3f5vQj7LuJrETvjVot3Z5el9nffUtU=
 gopkg.in/yaml.v2 v2.3.0/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=

@@ -28,7 +28,7 @@
 ![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/kiali?sort=semver) 
 ![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/kiali)   
 
-## [jaegertracing](https://github.com/jaegertracing/jaeger) 
+# [jaegertracing](https://github.com/jaegertracing/jaeger) 
 
 ## `querycapistio/all-in-one` 
 

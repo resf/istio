@@ -1,3 +1,5 @@
+# syntax = docker/dockerfile:experimental
+
 ARG JAGGER_UI
 FROM ${JAGGER_UI} as jagger-ui
 
@@ -19,7 +21,8 @@ COPY --from=jagger-ui /jaeger-ui ./jaeger-ui/packages/jaeger-ui/build
 RUN esc -pkg assets -o cmd/query/app/ui/actual/gen_assets.go -prefix jaeger-ui/packages/jaeger-ui/build jaeger-ui/packages/jaeger-ui/build
 RUN esc -pkg assets -o cmd/query/app/ui/placeholder/gen_assets.go -prefix cmd/query/app/ui/placeholder/public cmd/query/app/ui/placeholder/public
 
-RUN make build-all-in-one GOOS=$(go env GOOS) GOARCH=$(go env GOARCH)
+RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
+    make build-all-in-one GOOS=$(go env GOOS) GOARCH=$(go env GOARCH)
 
 FROM alpine:latest as certs
 RUN apk add --update --no-cache ca-certificates

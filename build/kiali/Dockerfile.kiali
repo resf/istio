@@ -19,7 +19,8 @@ RUN git clone --depth=1 -b v${VERSION} https://github.com/kiali/kiali.git /go/sr
 
 WORKDIR /go/src/github.com/kiali/kiali
 
-RUN --mount=type=cache,id=gomod,target=/go/pkg/mod make build
+RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
+    make build
 
 FROM registry.access.redhat.com/ubi8-minimal
 
