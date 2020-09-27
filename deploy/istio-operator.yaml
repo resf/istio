@@ -11,6 +11,7 @@ spec:
       - enabled: true
         k8s:
           affinity: &affinity
+            # important overwrites.
             nodeAffinity:
               requiredDuringSchedulingIgnoredDuringExecution:
                 nodeSelectorTerms:

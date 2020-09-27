@@ -1,4 +1,11 @@
-# Istio OCI Images (linux/arm64, linux/amd64)
+# Istio OCI Images (`linux/arm64, linux/amd64`)
+
+This repo is for building oci images for istio stacks.
+
+## How to use?
+
+using images under `querycapistio`, example could see https://github.com/querycap/istio/blob/master/deploy/istio-operator.yaml
+latest versions should check badges below:
 
 ## [Istios](https://github.com/istio/istio)
 
@@ -39,3 +46,7 @@
 # Notice
 
 * *all images tag version without `v` prefix*
+
+## istio envoy
+ 
+split to https://github.com/querycap/istio-envoy-arm64
