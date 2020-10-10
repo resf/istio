@@ -3,13 +3,22 @@
 ARG VERSION
 ARG BASE_DISTRIBUTION=default
 
-FROM istio/proxyv2:${VERSION} as proxyv2-amd64
+FROM istio/proxyv2:${VERSION} as proxyv2-default-amd64
+FROM istio/proxyv2:${VERSION}-distroless as proxyv2-distroless-amd64
+FROM proxyv2-${BASE_DISTRIBUTION}-amd64 as proxyv2-amd64
+
+FROM docker.io/querycapistio/istio-base:${VERSION} as default
+FROM gcr.io/distroless/cc:latest as distroless
+
+# TODO(https://github.com/istio/istio/issues/17656) clean up this hack
+COPY --from=default /sbin/xtables-multi /sbin/iptables* /sbin/ip6tables* /sbin/ip /sbin/
+COPY --from=default /usr/lib/*-linux-gnu /usr/lib/
+COPY --from=default /etc/iproute2 /etc/iproute2
 
 FROM golang:1.15 as proxyv2-arm64-builder
 
 ARG VERSION
 ARG GOPROXY=https://goproxy.io,direct
-ENV GOPROXY=${GOPROXY}
 
 RUN git clone --depth=1 -b ${VERSION} https://github.com/istio/istio /go/src/istio.io/istio
 WORKDIR /go/src/istio.io/istio

@@ -3,13 +3,17 @@
 ARG VERSION
 ARG BASE_DISTRIBUTION=default
 
-FROM istio/pilot:${VERSION} as pilot-amd64
+FROM istio/pilot:${VERSION} as pilot-default-amd64
+FROM istio/pilot:${VERSION}-distroless as pilot-distroless-amd64
+FROM pilot-${BASE_DISTRIBUTION}-amd64 as pilot-amd64
+
+FROM docker.io/querycapistio/istio-base:${VERSION} as default
+FROM docker.io/querycapistio/istio-distroless:${VERSION} as distroless
 
 FROM golang:1.15 as pilot-arm64-builder
 
 ARG VERSION
 ARG GOPROXY=https://goproxy.io,direct
-ENV GOPROXY=${GOPROXY}
 
 RUN git clone --depth=1 -b ${VERSION} https://github.com/istio/istio /go/src/istio.io/istio
 WORKDIR /go/src/istio.io/istio

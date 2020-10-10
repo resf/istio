@@ -1,1 +1,1 @@
-FROM querycapistio/istio-envoy-arm64:1.7.3
+FROM querycapistio/istio-base:1.7.3

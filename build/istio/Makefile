@@ -3,22 +3,15 @@ ENVOY_VERSION=$(shell docker inspect $(shell docker create istio/proxyv2:$(VERSI
 HUB = querycapistio
 NAME ?= operator
 
-BASE_DISTRIBUTION = $(HUB)/base:$(shell git rev-parse --short HEAD)
-
 TAG = $(VERSION)
 IMAGE = $(HUB)/$(NAME):$(TAG)
 
 image:
 	@echo $(IMAGE)
 
-build: build-docker-base
-	$(MAKE) -f ../Makefile buildx TAGS=$(IMAGE) DOCKERFILE=Dockerfile.$(NAME) BUILD_ARGS="VERSION=$(VERSION) ENVOY_VERSION=$(ENVOY_VERSION) BASE_DISTRIBUTION=$(BASE_DISTRIBUTION)"
-
-sync-docker-base:
-	wget -O base.Dockerfile https://raw.githubusercontent.com/istio/istio/$(VERSION)/docker/Dockerfile.base
-
-build-docker-base: sync-docker-base
-	$(MAKE) -f ../Makefile buildx TAGS=$(BASE_DISTRIBUTION) DOCKERFILE=base.Dockerfile
+build:
+	$(MAKE) -f ../Makefile buildx TAGS=$(IMAGE) DOCKERFILE=Dockerfile.$(NAME) BUILD_ARGS="VERSION=$(VERSION) ENVOY_VERSION=$(ENVOY_VERSION) BASE_DISTRIBUTION=default"
+	$(MAKE) -f ../Makefile buildx TAGS=$(IMAGE)-distroless DOCKERFILE=Dockerfile.$(NAME) BUILD_ARGS="VERSION=$(VERSION) ENVOY_VERSION=$(ENVOY_VERSION) BASE_DISTRIBUTION=distroless"
 
 version:
 	@echo "VERSION: $(VERSION)"
