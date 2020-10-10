@@ -1,0 +1,1 @@
+FROM querycapistio/istio-envoy-arm64:1.7.3
