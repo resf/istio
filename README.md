@@ -9,6 +9,8 @@ latest versions should check badges below:
 
 ## [Istios](https://github.com/istio/istio)
 
+`-distroless` supported since 1.7.3
+
 ## `querycapistio/proxyv2` 
 
 [![Docker Version](https://img.shields.io/docker/v/querycapistio/proxyv2?sort=semver)](https://hub.docker.com/r/querycapistio/proxyv2/tags) 
