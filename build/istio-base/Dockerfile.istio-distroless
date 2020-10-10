@@ -1,4 +1,4 @@
-FROM gcr.io/distroless/static:latest as distroless_source
+FROM querycapdistroless/static-debian10:latest as distroless_source
 
 FROM ubuntu:bionic as ubuntu_source
 
@@ -11,8 +11,8 @@ RUN echo isito-proxy:x:1337:1337:istio-proxy:/nonexistent:/sbin/nologin >> /home
 # - password file
 # - groups file
 # - /home/nonroot directory
-FROM gcr.io/distroless/static:latest
-COPY --from=ubuntu_source /etc/os-release /etc/os-release
+# TODO need to upgrade to gcr.io/distroless/static-debian10:latest
+FROM querycapdistroless/static-debian10:latest
 COPY --from=ubuntu_source /home/etc/passwd /etc/passwd
 COPY --from=ubuntu_source /home/etc/group /etc/group
 COPY --from=ubuntu_source /home/nonroot /home/nonroot
