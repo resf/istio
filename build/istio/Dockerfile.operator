@@ -26,8 +26,8 @@ RUN ./operator/scripts/create_assets_gen.sh
 ENV VERSION ${VERSION}
 
 # build operator
-RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
-    STATIC=0 \
+COPY /tmp/.buildx-cache/gomodcache /go/pkg/mod
+RUN STATIC=0 \
     GOOS=$(go env GOOS) \
     GOARCH=$(go env GOARCH) \
     LDFLAGS='-extldflags -static -s -w' \

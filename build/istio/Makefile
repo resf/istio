@@ -5,13 +5,17 @@ NAME ?= operator
 
 TAG = $(VERSION)
 IMAGE = $(HUB)/$(NAME):$(TAG)
+GOMODCACHE=/tmp/.buildx-cache/gomodcache
 
 image:
-	@echo $(IMAGE)
+	@echo $(IMAGE) $(IMAGE)-distroless
 
-build:
+build: prepare
 	$(MAKE) -f ../Makefile buildx TAGS=$(IMAGE) DOCKERFILE=Dockerfile.$(NAME) BUILD_ARGS="VERSION=$(VERSION) ENVOY_VERSION=$(ENVOY_VERSION) BASE_DISTRIBUTION=default"
 	$(MAKE) -f ../Makefile buildx TAGS=$(IMAGE)-distroless DOCKERFILE=Dockerfile.$(NAME) BUILD_ARGS="VERSION=$(VERSION) ENVOY_VERSION=$(ENVOY_VERSION) BASE_DISTRIBUTION=distroless"
+
+prepare:
+	docker run -e=GOPROXY=${GOPROXY} -v=$(GOMODCACHE):/go/pkg/mod golang:1.15 sh -c "git clone --depth=1 -b $(VERSION) https://github.com/istio/istio && cd istio && go mod download -x"
 
 version:
 	@echo "VERSION: $(VERSION)"

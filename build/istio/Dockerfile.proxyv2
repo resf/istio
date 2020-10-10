@@ -27,8 +27,8 @@ WORKDIR /go/src/istio.io/istio
 ENV VERSION ${VERSION}
 
 # build pilot-agent
-RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
-    STATIC=0 \
+COPY /tmp/.buildx-cache/gomodcache /go/pkg/mod
+RUN STATIC=0 \
     GOOS=$(go env GOOS) \
     GOARCH=$(go env GOARCH) \
     LDFLAGS='-extldflags -static -s -w' \
@@ -39,6 +39,8 @@ ARG VERSION=1.6.3
 # built on arm64 hosts
 # see more https://github.com/querycap/istio-envoy-arm64
 FROM querycapistio/istio-envoy-arm64:${VERSION} as envoy
+
+RUN chmod +x /envoy/envoy
 
 # https://github.com/istio/istio/blob/master/pilot/docker/Dockerfile.proxyv2
 FROM ${BASE_DISTRIBUTION} as proxyv2-arm64
@@ -59,10 +61,6 @@ COPY --from=proxyv2-arm64-builder /go/bin/pilot-agent /usr/local/bin/pilot-agent
 # copy static files from offical amd64 image
 COPY --from=proxyv2-amd64 /var/lib/istio/envoy/ /var/lib/istio/envoy/
 COPY --from=proxyv2-amd64 /etc/istio/extensions/ /etc/istio/extensions/
-
-## permission fix
-RUN chmod +x /usr/local/bin/envoy \
-    && chown -R istio-proxy /var/lib/istio
 
 ENTRYPOINT ["/usr/local/bin/pilot-agent"]
 

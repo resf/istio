@@ -52,6 +52,7 @@ jobs:
         registry: ${{ secrets.DOCKER_MIRROR_REGISTRY }}
         username: ${{ secrets.DOCKER_MIRROR_USERNAME }}
     - run: |-
-        export TAG=$(make image HUB=querycapistio NAME=proxyv2)
-
-        docker buildx build --push --platform linux/arm64,linux/amd64 --tag ${{ secrets.DOCKER_MIRROR_REGISTRY }}/${TAG} --build-arg TAG=${TAG} --file ../Dockerfile.sync .
+        for TAG in $(make image HUB=querycapistio NAME=proxyv2)
+        do
+            docker buildx build --push --platform linux/arm64,linux/amd64 --tag ${{ secrets.DOCKER_MIRROR_REGISTRY }}/${TAG} --build-arg TAG=${TAG} --file ../Dockerfile.sync .
+        done
