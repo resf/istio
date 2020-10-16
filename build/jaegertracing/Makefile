@@ -1,26 +1,11 @@
 VERSION = $(shell cat Dockerfile.version | grep "^FROM " | sed -e "s/FROM.*:v\{0,\}//g" )
-HUB = querycapistio
-NAME = all-in-one
-TARGET_PLATFORM = linux/arm64,linux/amd64
 
-TAG = $(VERSION)
-IMAGE = $(HUB)/$(NAME):$(TAG)
+NAME ?= all-in-one
+TAG ?= $(VERSION)
 
-image:
-	@echo $(IMAGE)
+prepare: setup
+	@echo ::set-output name=image::$(NAME):$(TAG)
+	@echo ::set-output name=build_args::VERSION=$(VERSION)
 
-build: build-ui
-	$(MAKE) -f ../Makefile buildx \
-		TAGS=$(IMAGE) \
-		BUILD_ARGS="VERSION=$(VERSION) JAGGER_UI=$(HUB)/jagger-ui:$(VERSION)" \
-		DOCKERFILE=Dockerfile.$(NAME)
-
-build-ui:
-	$(MAKE) -f ../Makefile buildx \
-		TAGS=$(HUB)/jagger-ui:$(VERSION) \
-		DOCKERFILE=jagger-ui.Dockerfile \
-		TARGET_PLATFORM=linux/amd64 \
-		BUILD_ARGS=VERSION=$(VERSION)
-
-version:
-	@echo "VERSION: $(VERSION)"
+setup:
+	docker buildx build --push --build-arg VERSION=$(VERSION) -t localhost:5000/src:$(VERSION) -f ./src.Dockerfile .

@@ -3,20 +3,20 @@
 ARG VERSION
 ARG BASE_DISTRIBUTION=default
 
-FROM istio/operator:${VERSION} as operator-default-amd64
-FROM istio/operator:${VERSION}-distroless as operator-distroless-amd64
-FROM operator-${BASE_DISTRIBUTION}-amd64 as operator-amd64
+FROM localhost:5000/src:${VERSION} AS src
+FROM istio/operator:${VERSION} AS operator-default-amd64
+FROM istio/operator:${VERSION}-distroless AS operator-distroless-amd64
+FROM operator-${BASE_DISTRIBUTION}-amd64 AS operator-amd64
 
-FROM docker.io/querycapistio/istio-base:${VERSION} as default
-FROM docker.io/querycapistio/istio-distroless:${VERSION} as distroless
+FROM ghcr.io/querycap/istio/istio-base:${VERSION} AS default
+FROM ghcr.io/querycap/istio/istio-distroless:${VERSION} AS distroless
 
-FROM golang:1.15 as operator-arm64-builder
+FROM golang:1.15 AS operator-arm64-builder
 
 ARG VERSION
-ARG GOPROXY=https://goproxy.io,direct
 
-RUN git clone --depth=1 -b ${VERSION} https://github.com/istio/istio /go/src/istio.io/istio
-WORKDIR /go/src/istio.io/istio
+COPY --from=src /go/src /go/src
+WORKDIR /go/src
 
 # https://github.com/istio/istio/tree/master/operator#building
 RUN GO111MODULE=on go get github.com/jteeuwen/go-bindata/go-bindata@6025e8de665b
@@ -35,7 +35,7 @@ RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
     common/scripts/gobuild.sh /go/bin/ ./operator/cmd/operator
 
 # https://github.com/istio/istio/blob/master/operator/docker/Dockerfile.operator
-FROM ${BASE_DISTRIBUTION} as operator-arm64
+FROM ${BASE_DISTRIBUTION} AS operator-arm64
 
 # copy arm64 bin
 COPY --from=operator-arm64-builder /go/bin/operator /usr/local/bin/operator

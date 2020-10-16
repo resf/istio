@@ -3,16 +3,17 @@
 ARG VERSION
 ARG BASE_DISTRIBUTION=default
 
-FROM istio/proxyv2:${VERSION} as proxyv2-default-amd64
-FROM istio/proxyv2:${VERSION}-distroless as proxyv2-distroless-amd64
-FROM proxyv2-${BASE_DISTRIBUTION}-amd64 as proxyv2-amd64
+FROM localhost:5000/src:${VERSION} AS src
+FROM istio/proxyv2:${VERSION} AS proxyv2-default-amd64
+FROM istio/proxyv2:${VERSION}-distroless AS proxyv2-distroless-amd64
+FROM proxyv2-${BASE_DISTRIBUTION}-amd64 AS proxyv2-amd64
 
-FROM docker.io/querycapistio/istio-base:${VERSION} as default
+FROM ghcr.io/querycap/istio/istio-base:${VERSION} AS default
 
-FROM debian:buster as distroless-base
+FROM debian:buster AS distroless-base
 
 # TODO replace until gcr.io/distroless/cc-debian10:latest lands
-FROM querycapdistroless/cc-debian10:latest as distroless
+FROM ghcr.io/querycap/distroless/cc-debian10:latest AS distroless
 
 # TODO(https://github.com/istio/istio/issues/17656) clean up this hack
 COPY --from=default /sbin/xtables-multi /sbin/iptables* /sbin/ip6tables* /sbin/ip /sbin/
@@ -20,13 +21,12 @@ COPY --from=default /usr/lib/aarch64-linux-gnu/xtables/ /usr/lib/aarch64-linux-g
 COPY --from=default /usr/lib/aarch64-linux-gnu/ /usr/lib/aarch64-linux-gnu
 COPY --from=default /etc/iproute2 /etc/iproute2
 
-FROM golang:1.15 as proxyv2-arm64-builder
+FROM golang:1.15 AS proxyv2-arm64-builder
 
 ARG VERSION
-ARG GOPROXY=https://goproxy.io,direct
 
-RUN git clone --depth=1 -b ${VERSION} https://github.com/istio/istio /go/src/istio.io/istio
-WORKDIR /go/src/istio.io/istio
+COPY --from=src /go/src /go/src
+WORKDIR /go/src
 
 # important for https://github.com/istio/istio/blob/master/common/scripts/report_build_info.sh#L42
 ENV VERSION ${VERSION}
@@ -40,18 +40,18 @@ RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
     LDFLAGS='-extldflags -static -s -w' \
     common/scripts/gobuild.sh /go/bin/ ./pilot/cmd/pilot-agent
 
-ARG VERSION=1.6.3
+ARG VERSION
 
 # built on arm64 hosts
 # see more https://github.com/querycap/istio-envoy-arm64
-FROM querycapistio/istio-envoy-arm64:${VERSION} as envoy
+FROM querycapistio/istio-envoy-arm64:${VERSION} AS envoy
 
 RUN chmod +x /envoy/envoy
 
 # https://github.com/istio/istio/blob/master/pilot/docker/Dockerfile.proxyv2
-FROM ${BASE_DISTRIBUTION} as proxyv2-arm64
+FROM ${BASE_DISTRIBUTION} AS proxyv2-arm64
 
-ARG VERSION=1.6.3
+ARG VERSION
 ARG ENVOY_VERSION=""
 
 # copy envoy

@@ -1,0 +1,4 @@
+matrix:
+  BASE_DISTRIBUTION:
+    - "default"
+    - "distroless"

@@ -3,20 +3,20 @@
 ARG VERSION
 ARG BASE_DISTRIBUTION=default
 
-FROM istio/pilot:${VERSION} as pilot-default-amd64
-FROM istio/pilot:${VERSION}-distroless as pilot-distroless-amd64
-FROM pilot-${BASE_DISTRIBUTION}-amd64 as pilot-amd64
+FROM localhost:5000/src:${VERSION} AS src
+FROM istio/pilot:${VERSION} AS pilot-default-amd64
+FROM istio/pilot:${VERSION}-distroless AS pilot-distroless-amd64
+FROM pilot-${BASE_DISTRIBUTION}-amd64 AS pilot-amd64
 
-FROM docker.io/querycapistio/istio-base:${VERSION} as default
-FROM docker.io/querycapistio/istio-distroless:${VERSION} as distroless
+FROM ghcr.io/querycap/istio/istio-base:${VERSION} AS default
+FROM ghcr.io/querycap/istio/istio-distroless:${VERSION} AS distroless
 
-FROM golang:1.15 as pilot-arm64-builder
+FROM golang:1.15 AS pilot-arm64-builder
 
 ARG VERSION
-ARG GOPROXY=https://goproxy.io,direct
 
-RUN git clone --depth=1 -b ${VERSION} https://github.com/istio/istio /go/src/istio.io/istio
-WORKDIR /go/src/istio.io/istio
+COPY --from=src /go/src /go/src
+WORKDIR /go/src
 
 # important for https://github.com/istio/istio/blob/master/common/scripts/report_build_info.sh#L42
 ENV VERSION ${VERSION}
@@ -31,7 +31,7 @@ RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
     common/scripts/gobuild.sh /go/bin/ ./pilot/cmd/pilot-discovery
 
 # https://github.com/istio/istio/blob/master/pilot/docker/Dockerfile.pilot
-FROM ${BASE_DISTRIBUTION} as pilot-arm64
+FROM ${BASE_DISTRIBUTION} AS pilot-arm64
 
 # copy bin
 COPY --from=pilot-arm64-builder /go/bin/pilot-discovery /usr/local/bin/pilot-discovery

@@ -1,30 +1,20 @@
 # syntax = docker/dockerfile:experimental
 
-ARG JAGGER_UI
-FROM ${JAGGER_UI} as jagger-ui
-
-FROM golang:1.15 as builder
-
 ARG VERSION
-ARG GOPROXY=https://goproxy.io,direct
-ENV GOPROXY=${GOPROXY}
+FROM localhost:5000/src:${VERSION} AS src
 
-RUN git clone --depth=1 -b v${VERSION} https://github.com/jaegertracing/jaeger.git /go/src/github.com/jaegertracing/jaeger;
+FROM golang:1.15 AS builder
 
-WORKDIR /go/src/github.com/jaegertracing/jaeger
+COPY --from=src /go/src /go/src
+WORKDIR /go/src
 
-RUN go get -u github.com/mjibson/esc
-RUN git submodule update --init
-
-COPY --from=jagger-ui /jaeger-ui ./jaeger-ui/packages/jaeger-ui/build
-
-RUN esc -pkg assets -o cmd/query/app/ui/actual/gen_assets.go -prefix jaeger-ui/packages/jaeger-ui/build jaeger-ui/packages/jaeger-ui/build
-RUN esc -pkg assets -o cmd/query/app/ui/placeholder/gen_assets.go -prefix cmd/query/app/ui/placeholder/public cmd/query/app/ui/placeholder/public
+RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
+    go get -u github.com/mjibson/esc
 
 RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
     make build-all-in-one GOOS=$(go env GOOS) GOARCH=$(go env GOARCH)
 
-FROM alpine:latest as certs
+FROM alpine:latest AS certs
 RUN apk add --update --no-cache ca-certificates
 
 FROM scratch
@@ -47,8 +37,8 @@ EXPOSE 14250
 # Web HTTP
 EXPOSE 16686
 
-COPY --from=builder /go/src/github.com/jaegertracing/jaeger/cmd/all-in-one/all-in-one-linux-$TARGETARCH /go/bin/all-in-one-linux
-COPY --from=builder /go/src/github.com/jaegertracing/jaeger/cmd/all-in-one/sampling_strategies.json /etc/jaeger/
+COPY --from=builder /go/src/cmd/all-in-one/all-in-one-linux-${TARGETARCH} /go/bin/all-in-one-linux
+COPY --from=builder /go/src/cmd/all-in-one/sampling_strategies.json /etc/jaeger/
 
 VOLUME ["/tmp"]
 ENTRYPOINT ["/go/bin/all-in-one-linux"]

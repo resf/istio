@@ -1,3 +1,7 @@
-gen:
-	go get github.com/querycap/ci-infra/cmd/imagetools@35fe7f2
-	HUB=querycapistio go run github.com/querycap/ci-infra/cmd/imagetools
+HUB=ghcr.io/querycap/istio docker.io/querycapistio
+
+gen: install
+	HUB="$(HUB)" go run github.com/querycap/ci-infra/cmd/imagetools
+
+install:
+	go get github.com/querycap/ci-infra/cmd/imagetools@master

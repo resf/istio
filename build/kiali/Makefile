@@ -1,14 +1,8 @@
 VERSION=$(shell cat Dockerfile.version | grep "^FROM " | sed -e "s/FROM.*:v\{0,\}//g" )
-NAME = kiali
-HUB = querycapistio
 
-TAG = $(VERSION)
-IMAGE = $(HUB)/$(NAME):$(TAG)
+NAME ?= kiali
+TAG ?= $(VERSION)
 
-image:
-	@echo $(IMAGE)
-
-build:
-	$(MAKE) -f ../Makefile buildx TAGS=$(IMAGE) BUILD_ARGS=VERSION=$(VERSION) DOCKERFILE=Dockerfile.$(NAME)
-
-
+prepare:
+	@echo ::set-output name=image::$(NAME):$(TAG)
+	@echo ::set-output name=build_args::VERSION=$(VERSION)

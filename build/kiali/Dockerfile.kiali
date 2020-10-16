@@ -2,18 +2,12 @@
 
 ARG VERSION
 
-FROM quay.io/kiali/kiali:v${VERSION} as console
+FROM quay.io/kiali/kiali:v${VERSION} AS console
 
-FROM golang:1.15 as builder
+FROM golang:1.15 AS builder
 
 ARG VERSION
 ARG GOPROXY=https://goproxy.io,direct
-ENV GOPROXY=${GOPROXY}
-
-RUN set -eux; \
-    \
-    apt-get update; \
-    apt-get install git;
 
 RUN git clone --depth=1 -b v${VERSION} https://github.com/kiali/kiali.git /go/src/github.com/kiali/kiali;
 

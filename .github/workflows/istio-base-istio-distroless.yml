@@ -10,49 +10,52 @@ jobs:
   istio-distroless:
     runs-on:
     - ubuntu-latest
+    services:
+      registry:
+        image: registry:2
+        ports:
+        - 5000:5000
     defaults:
       run:
         working-directory: build/istio-base
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/cache@v2
-      with:
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
-        path: /tmp/.buildx-cache
-        restore-keys: ${{ runner.os }}-buildx-
     - uses: docker/setup-qemu-action@v1
     - uses: docker/setup-buildx-action@v1
+      with:
+        driver-opts: network=host
     - uses: docker/login-action@v1
+      name: Login ghcr.io
+      with:
+        password: ${{ secrets.CR_PAT }}
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+    - uses: docker/login-action@v1
+      name: Login docker.io
       with:
         password: ${{ secrets.DOCKER_PASSWORD }}
+        registry: docker.io
         username: ${{ secrets.DOCKER_USERNAME }}
-    - name: Versioned Build
-      if: github.ref == 'refs/heads/master'
-      run: make build HUB=querycapistio NAME=istio-distroless
-    - name: Temp Build
-      if: github.ref != 'refs/heads/master'
-      run: make build TAG=temp-${{ github.sha }} HUB=querycapistio NAME=istio-distroless
-  sync-istio-distroless:
-    runs-on:
-    - self-hosted
-    - arm64
-    needs:
-    - istio-distroless
-    if: github.ref == 'refs/heads/master'
-    defaults:
-      run:
-        working-directory: build/istio-base
-    steps:
-    - uses: actions/checkout@v2
-    - uses: docker/setup-qemu-action@v1
-    - uses: docker/setup-buildx-action@v1
-    - uses: docker/login-action@v1
+    - id: prepare
+      name: prepare
+      env:
+        NAME: istio-distroless
+      run: |-
+        if [[ ${{ github.ref }} != "refs/heads/master" ]]; then
+          export TAG=temp-${{ github.sha }}
+        fi
+        make prepare
+    - uses: docker/build-push-action@v2
+      name: Push
       with:
-        password: ${{ secrets.DOCKER_MIRROR_PASSWORD }}
-        registry: ${{ secrets.DOCKER_MIRROR_REGISTRY }}
-        username: ${{ secrets.DOCKER_MIRROR_USERNAME }}
-    - run: |-
-        for TAG in $(make image HUB=querycapistio NAME=istio-distroless)
-        do
-            docker buildx build --push --platform linux/arm64,linux/amd64 --tag ${{ secrets.DOCKER_MIRROR_REGISTRY }}/${TAG} --build-arg TAG=${TAG} --file ../Dockerfile.sync .
-        done
+        build-args: ${{ steps.prepare.outputs.build_args }}
+        context: build/istio-base
+        file: build/istio-base/Dockerfile.istio-distroless
+        labels: |-
+          org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          org.opencontainers.image.revision=${{ github.sha }}
+        platforms: linux/amd64,linux/arm64
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: |-
+          ghcr.io/querycap/istio/${{ steps.prepare.outputs.image }}
+          docker.io/querycapistio/${{ steps.prepare.outputs.image }}
