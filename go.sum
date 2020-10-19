@@ -32,6 +32,8 @@ github.com/querycap/ci-infra v0.0.0-20201016121742-f592e271ebd2 h1:oMaozTkz2uaza
 github.com/querycap/ci-infra v0.0.0-20201016121742-f592e271ebd2/go.mod h1:ODC68EFw3ueH9Yolfw6aBs/+BJTZBRqLqO3KzbwPaOc=
 github.com/querycap/ci-infra v0.0.0-20201016151721-c6cd1e21a833 h1:GdZZmhqcKKib6mK7NRJ3Do0mEhZ5P2AT6VUAUha+uyY=
 github.com/querycap/ci-infra v0.0.0-20201016151721-c6cd1e21a833/go.mod h1:ODC68EFw3ueH9Yolfw6aBs/+BJTZBRqLqO3KzbwPaOc=
+github.com/querycap/ci-infra v0.0.0-20201019031109-499bc9f4ef16 h1:YZCHePjYaXnyEdCsygw4BO/5AtGxamlgaXL4IozNbEo=
+github.com/querycap/ci-infra v0.0.0-20201019031109-499bc9f4ef16/go.mod h1:ODC68EFw3ueH9Yolfw6aBs/+BJTZBRqLqO3KzbwPaOc=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/yaml.v2 v2.3.0 h1:clyUAQHOM3G0M3f5vQj7LuJrETvjVot3Z5el9nffUtU=
 gopkg.in/yaml.v2 v2.3.0/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
