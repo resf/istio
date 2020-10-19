@@ -1,13 +1,13 @@
-name: istio-pilot
+name: kiali
 "on":
   push:
     paths:
-    - .github/workflows/istio-pilot.yml
-    - build/istio/Dockerfile.pilot
-    - build/istio/Dockerfile.version
-    - build/istio/Makefile
+    - .github/workflows/zz-kiali.yml
+    - build/kiali/Dockerfile.kiali
+    - build/kiali/Dockerfile.version
+    - build/kiali/Makefile
 jobs:
-  pilot:
+  kiali:
     runs-on:
     - ubuntu-latest
     services:
@@ -17,12 +17,7 @@ jobs:
         - 5000:5000
     defaults:
       run:
-        working-directory: build/istio
-    strategy:
-      matrix:
-        BASE_DISTRIBUTION:
-        - default
-        - distroless
+        working-directory: build/kiali
     steps:
     - uses: actions/checkout@v2
     - uses: docker/setup-qemu-action@v1
@@ -44,8 +39,7 @@ jobs:
     - id: prepare
       name: prepare
       env:
-        BASE_DISTRIBUTION: ${{ matrix.BASE_DISTRIBUTION }}
-        NAME: pilot
+        NAME: kiali
       run: |-
         if [[ ${{ github.ref }} != "refs/heads/master" ]]; then
           export TAG=temp-${{ github.sha }}
@@ -55,8 +49,8 @@ jobs:
       name: Push
       with:
         build-args: ${{ steps.prepare.outputs.build_args }}
-        context: build/istio
-        file: build/istio/Dockerfile.pilot
+        context: build/kiali
+        file: build/kiali/Dockerfile.kiali
         labels: |-
           org.opencontainers.image.source=https://github.com/${{ github.repository }}
           org.opencontainers.image.revision=${{ github.sha }}

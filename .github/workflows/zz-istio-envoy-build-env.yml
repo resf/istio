@@ -1,13 +1,13 @@
-name: istio-proxyv2
+name: istio-envoy-build-env
 "on":
   push:
     paths:
-    - .github/workflows/istio-proxyv2.yml
-    - build/istio/Dockerfile.proxyv2
-    - build/istio/Dockerfile.version
-    - build/istio/Makefile
+    - .github/workflows/zz-istio-envoy-build-env.yml
+    - build/istio-envoy-build-env/Dockerfile.istio-envoy-build-env
+    - build/istio-envoy-build-env/.version
+    - build/istio-envoy-build-env/Makefile
 jobs:
-  proxyv2:
+  istio-envoy-build-env:
     runs-on:
     - ubuntu-latest
     services:
@@ -17,12 +17,7 @@ jobs:
         - 5000:5000
     defaults:
       run:
-        working-directory: build/istio
-    strategy:
-      matrix:
-        BASE_DISTRIBUTION:
-        - default
-        - distroless
+        working-directory: build/istio-envoy-build-env
     steps:
     - uses: actions/checkout@v2
     - uses: docker/setup-qemu-action@v1
@@ -44,8 +39,7 @@ jobs:
     - id: prepare
       name: prepare
       env:
-        BASE_DISTRIBUTION: ${{ matrix.BASE_DISTRIBUTION }}
-        NAME: proxyv2
+        NAME: istio-envoy-build-env
       run: |-
         if [[ ${{ github.ref }} != "refs/heads/master" ]]; then
           export TAG=temp-${{ github.sha }}
@@ -55,8 +49,8 @@ jobs:
       name: Push
       with:
         build-args: ${{ steps.prepare.outputs.build_args }}
-        context: build/istio
-        file: build/istio/Dockerfile.proxyv2
+        context: build/istio-envoy-build-env
+        file: build/istio-envoy-build-env/Dockerfile.istio-envoy-build-env
         labels: |-
           org.opencontainers.image.source=https://github.com/${{ github.repository }}
           org.opencontainers.image.revision=${{ github.sha }}

@@ -1,13 +1,13 @@
-name: istio-base
+name: istio-base-istio-distroless
 "on":
   push:
     paths:
-    - .github/workflows/istio-base.yml
-    - build/istio-base/Dockerfile.istio-base
+    - .github/workflows/zz-istio-base-istio-distroless.yml
+    - build/istio-base/Dockerfile.istio-distroless
     - build/istio-base/Dockerfile.version
     - build/istio-base/Makefile
 jobs:
-  istio-base:
+  istio-distroless:
     runs-on:
     - ubuntu-latest
     services:
@@ -39,7 +39,7 @@ jobs:
     - id: prepare
       name: prepare
       env:
-        NAME: istio-base
+        NAME: istio-distroless
       run: |-
         if [[ ${{ github.ref }} != "refs/heads/master" ]]; then
           export TAG=temp-${{ github.sha }}
@@ -50,7 +50,7 @@ jobs:
       with:
         build-args: ${{ steps.prepare.outputs.build_args }}
         context: build/istio-base
-        file: build/istio-base/Dockerfile.istio-base
+        file: build/istio-base/Dockerfile.istio-distroless
         labels: |-
           org.opencontainers.image.source=https://github.com/${{ github.repository }}
           org.opencontainers.image.revision=${{ github.sha }}

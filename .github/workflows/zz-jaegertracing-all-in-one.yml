@@ -2,7 +2,7 @@ name: jaegertracing-all-in-one
 "on":
   push:
     paths:
-    - .github/workflows/jaegertracing-all-in-one.yml
+    - .github/workflows/zz-jaegertracing-all-in-one.yml
     - build/jaegertracing/Dockerfile.all-in-one
     - build/jaegertracing/Dockerfile.version
     - build/jaegertracing/Makefile

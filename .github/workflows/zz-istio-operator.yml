@@ -1,13 +1,13 @@
-name: kiali
+name: istio-operator
 "on":
   push:
     paths:
-    - .github/workflows/kiali.yml
-    - build/kiali/Dockerfile.kiali
-    - build/kiali/Dockerfile.version
-    - build/kiali/Makefile
+    - .github/workflows/zz-istio-operator.yml
+    - build/istio/Dockerfile.operator
+    - build/istio/Dockerfile.version
+    - build/istio/Makefile
 jobs:
-  kiali:
+  operator:
     runs-on:
     - ubuntu-latest
     services:
@@ -17,7 +17,12 @@ jobs:
         - 5000:5000
     defaults:
       run:
-        working-directory: build/kiali
+        working-directory: build/istio
+    strategy:
+      matrix:
+        BASE_DISTRIBUTION:
+        - default
+        - distroless
     steps:
     - uses: actions/checkout@v2
     - uses: docker/setup-qemu-action@v1
@@ -39,7 +44,8 @@ jobs:
     - id: prepare
       name: prepare
       env:
-        NAME: kiali
+        BASE_DISTRIBUTION: ${{ matrix.BASE_DISTRIBUTION }}
+        NAME: operator
       run: |-
         if [[ ${{ github.ref }} != "refs/heads/master" ]]; then
           export TAG=temp-${{ github.sha }}
@@ -49,8 +55,8 @@ jobs:
       name: Push
       with:
         build-args: ${{ steps.prepare.outputs.build_args }}
-        context: build/kiali
-        file: build/kiali/Dockerfile.kiali
+        context: build/istio
+        file: build/istio/Dockerfile.operator
         labels: |-
           org.opencontainers.image.source=https://github.com/${{ github.repository }}
           org.opencontainers.image.revision=${{ github.sha }}

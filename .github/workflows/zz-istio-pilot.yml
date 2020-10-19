@@ -1,13 +1,13 @@
-name: istio-operator
+name: istio-pilot
 "on":
   push:
     paths:
-    - .github/workflows/istio-operator.yml
-    - build/istio/Dockerfile.operator
+    - .github/workflows/zz-istio-pilot.yml
+    - build/istio/Dockerfile.pilot
     - build/istio/Dockerfile.version
     - build/istio/Makefile
 jobs:
-  operator:
+  pilot:
     runs-on:
     - ubuntu-latest
     services:
@@ -45,7 +45,7 @@ jobs:
       name: prepare
       env:
         BASE_DISTRIBUTION: ${{ matrix.BASE_DISTRIBUTION }}
-        NAME: operator
+        NAME: pilot
       run: |-
         if [[ ${{ github.ref }} != "refs/heads/master" ]]; then
           export TAG=temp-${{ github.sha }}
@@ -56,7 +56,7 @@ jobs:
       with:
         build-args: ${{ steps.prepare.outputs.build_args }}
         context: build/istio
-        file: build/istio/Dockerfile.operator
+        file: build/istio/Dockerfile.pilot
         labels: |-
           org.opencontainers.image.source=https://github.com/${{ github.repository }}
           org.opencontainers.image.revision=${{ github.sha }}
