@@ -1,4 +1,4 @@
-FROM debian:buster as gn
+FROM debian:buster AS gn
 
 RUN set -eux; \
     \
@@ -29,7 +29,7 @@ FROM golang:1.15 AS bazel
 RUN set -eux; \
     \
     case $(uname -m) in \
-        x86_64) export BAZEL_BIN_URL=https://github.com/bazelbuild/bazelisk/releases/download/v1.7.2/bazelisk-linux-amd64;; \
+        x86_64) export BAZEL_BIN_URL=https://github.com/bazelbuild/bazelisk/releases/download/v1.6.1/bazelisk-linux-amd64;; \
         aarch64) export BAZEL_BIN_URL=https://github.com/Tick-Tocker/bazelisk-arm64/releases/download/arm64/bazelisk-linux-arm64;; \
         *) echo "unsupported architecture"; exit 1 ;; \
     esac; \
@@ -40,7 +40,13 @@ RUN set -eux; \
 RUN go get github.com/bazelbuild/buildtools/buildifier
 RUN go get github.com/bazelbuild/buildtools/buildozer
 
-FROM busybox AS llvm-src
+FROM debian:buster AS llvm-src
+
+RUN set -eux; \
+    \
+    apt-get update; \
+    apt-get install -qqy --no-install-recommends \
+        ca-certificates wget xz-utils;
 
 ENV LLVM_VERSION=9.0.0
 ENV LLVM_PATH=/usr/lib/llvm-9
@@ -57,7 +63,8 @@ RUN set -eux; \
     \
     wget -O ${LLVM_RELEASE}.tar.xz "https://releases.llvm.org/${LLVM_VERSION}/${LLVM_RELEASE}.tar.xz"; \
     \
-    tar -Jxf ${LLVM_RELEASE}.tar.xz; \
+    ls -al;\
+    tar -Jxf ./${LLVM_RELEASE}.tar.xz; \
     mkdir -p ${LLVM_PATH}; \
     ls ./${LLVM_RELEASE}; \
     cp -R ${LLVM_RELEASE}/* ${LLVM_PATH}/; \
