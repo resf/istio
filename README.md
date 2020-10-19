@@ -4,32 +4,38 @@ This repo is for building oci images for istio stacks.
 
 ## How to use?
 
-using images under `querycapistio`, example could see https://github.com/querycap/istio/blob/master/deploy/istio-operator.yaml
+using images under `querycapistio`, 
+example could see https://github.com/querycap/istio/blob/master/deploy/istio-operator.yaml
+
 latest versions should check badges below:
 
-## [Istios](https://github.com/istio/istio)
+## [`istios`](https://github.com/istio/istio)
 
-`-distroless` supported since 1.7.3
-
-## `querycapistio/proxyv2` 
+## `querycapistio/proxyv2:{VERSION}[-distroless]`
 
 [![Docker Version](https://img.shields.io/docker/v/querycapistio/proxyv2?sort=semver)](https://hub.docker.com/r/querycapistio/proxyv2/tags) 
 ![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/proxyv2?sort=semver) 
 ![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/proxyv2)   
 
-## `querycapistio/pilot` 
+## `querycapistio/pilot:{VERSION}[-distroless]` 
 
 [![Docker Version](https://img.shields.io/docker/v/querycapistio/pilot?sort=semver)](https://hub.docker.com/r/querycapistio/pilot/tags)
 ![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/pilot?sort=semver) 
 ![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/pilot)   
 
-## `querycapistio/operator` 
+##  `querycapistio/operator:{VERSION}[-distroless]`
 
 [![Docker Version](https://img.shields.io/docker/v/querycapistio/operator?sort=semver)](https://hub.docker.com/r/querycapistio/operator/tags)
 ![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/operator?sort=semver) 
 ![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/operator)   
 
-# [kiali](https://github.com/kiali/kiali)
+##  `querycapistio/istio-envoy:{VERSION}`
+
+[![Docker Version](https://img.shields.io/docker/v/querycapistio/istio-envoy?sort=semver)](https://hub.docker.com/r/querycapistio/istio-envoy/tags)
+![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/istio-envoy?sort=semver) 
+![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/istio-envoy)
+
+# [`kiali`](https://github.com/kiali/kiali)
 
 ## `querycapistio/kiali` 
 
@@ -37,7 +43,7 @@ latest versions should check badges below:
 ![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/kiali?sort=semver) 
 ![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/kiali)   
 
-# [jaegertracing](https://github.com/jaegertracing/jaeger) 
+# [`jaegertracing`](https://github.com/jaegertracing/jaeger) 
 
 ## `querycapistio/all-in-one` 
 
@@ -48,7 +54,3 @@ latest versions should check badges below:
 # Notice
 
 * *all images tag version without `v` prefix*
-
-## istio envoy
- 
-split to https://github.com/querycap/istio-envoy-arm64
