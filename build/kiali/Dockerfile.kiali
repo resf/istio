@@ -4,17 +4,17 @@ ARG VERSION
 
 FROM quay.io/kiali/kiali:v${VERSION} AS console
 
-FROM golang:1.15 AS builder
+FROM --platform=${BUILDPLATFORM} golang:1.15 AS builder
 
 ARG VERSION
-ARG GOPROXY=https://goproxy.io,direct
+RUN git clone --depth=1 -b v${VERSION} https://github.com/kiali/kiali.git /go/src;
+WORKDIR /go/src
 
-RUN git clone --depth=1 -b v${VERSION} https://github.com/kiali/kiali.git /go/src/github.com/kiali/kiali;
+ARG GOPROXY
+RUN --mount=type=cache,id=gomod,target=/go/pkg/mod go mod download
 
-WORKDIR /go/src/github.com/kiali/kiali
-
-RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
-    make build
+ARG TARGETARCH
+RUN --mount=type=cache,id=gomod,target=/go/pkg/mod GOARCH=${TARGETARCH} make build && mv /go/bin/kiali /go/bin/kiali-${TARGETARCH}
 
 FROM registry.access.redhat.com/ubi8-minimal
 
@@ -30,7 +30,8 @@ RUN microdnf install -y shadow-utils && \
     rm -rf /var/cache/yum && \
     adduser kiali
 
-COPY --from=builder /go/bin/kiali $KIALI_HOME/
+ARG TARGETARCH
+COPY --from=builder /go/bin/kiali-${TARGETARCH} $KIALI_HOME/kiali
 
 COPY --from=console $KIALI_HOME/console $KIALI_HOME/console
 
