@@ -3,12 +3,6 @@
 ARG VERSION
 ARG BASE_DISTRIBUTION=default
 
-FROM --platform=${BUILDPLATFORM} golang:1.15 AS src
-ARG VERSION
-RUN git clone --depth=1 -b ${VERSION} https://github.com/istio/istio /go/src/
-WORKDIR /go/src/
-RUN --mount=type=cache,id=gomod,target=/go/pkg/mod go mod download
-
 FROM istio/proxyv2:${VERSION} AS proxyv2-default-amd64
 FROM istio/proxyv2:${VERSION}-distroless AS proxyv2-distroless-amd64
 FROM proxyv2-${BASE_DISTRIBUTION}-amd64 AS proxyv2-amd64
@@ -26,12 +20,10 @@ COPY --from=default /usr/lib/aarch64-linux-gnu/xtables/ /usr/lib/aarch64-linux-g
 COPY --from=default /usr/lib/aarch64-linux-gnu/ /usr/lib/aarch64-linux-gnu
 COPY --from=default /etc/iproute2 /etc/iproute2
 
-FROM golang:1.15 AS proxyv2-arm64-builder
-
+FROM --platform=${BUILDPLATFORM} golang:1.15 AS proxyv2-arm64-builder
 ARG VERSION
-
-COPY --from=src /go/src /go/src
-WORKDIR /go/src
+RUN git clone --depth=1 -b ${VERSION} https://github.com/istio/istio /go/src/
+WORKDIR /go/src/
 
 # important for https://github.com/istio/istio/blob/master/common/scripts/report_build_info.sh#L42
 ENV VERSION ${VERSION}
@@ -40,7 +32,7 @@ ENV VERSION ${VERSION}
 RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
     STATIC=0 \
     GOOS=$(go env GOOS) \
-    GOARCH=$(go env GOARCH) \
+    GOARCH=arm64 \
     LDFLAGS='-extldflags -static -s -w' \
     common/scripts/gobuild.sh /go/bin/ ./pilot/cmd/pilot-agent
 

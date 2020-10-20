@@ -14,27 +14,21 @@ COPY --from=src /go/src/jaeger-ui /go/src/jaeger-ui
 WORKDIR /go/src/jaeger-ui
 RUN yarn install --frozen-lockfile && cd packages/jaeger-ui && yarn build
 
-FROM --platform=${BUILDPLATFORM} golang:1.15 AS prebuild
+FROM --platform=${BUILDPLATFORM} golang:1.15 AS builder
 
 COPY --from=src /go/src /go/src
 COPY --from=ui /go/src/jaeger-ui/packages/jaeger-ui/build /go/src/jaeger-ui/packages/jaeger-ui/build
 
 WORKDIR /go/src/
 
-RUN --mount=type=cache,id=gomod,target=/go/pkg/mod go mod download
 RUN --mount=type=cache,id=gomod,target=/go/pkg/mod go get -u github.com/mjibson/esc
 
 RUN esc -pkg assets -o cmd/query/app/ui/actual/gen_assets.go -prefix jaeger-ui/packages/jaeger-ui/build jaeger-ui/packages/jaeger-ui/build
 RUN esc -pkg assets -o cmd/query/app/ui/placeholder/gen_assets.go -prefix cmd/query/app/ui/placeholder/public cmd/query/app/ui/placeholder/public
 
-FROM golang:1.15 AS builder
-
-COPY --from=prebuild /go/src /go/src
-WORKDIR /go/src
-
-RUN --mount=type=cache,id=gomod,target=/go/pkg/mod go get -u github.com/mjibson/esc
 RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
-    make build-all-in-one GOOS=$(go env GOOS) GOARCH=$(go env GOARCH)
+    make build-all-in-one GOOS=$(go env GOOS) GOARCH=amd64; \
+    make build-all-in-one GOOS=$(go env GOOS) GOARCH=arm64;
 
 FROM alpine:latest AS certs
 RUN apk add --update --no-cache ca-certificates

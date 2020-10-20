@@ -3,12 +3,6 @@
 ARG VERSION
 ARG BASE_DISTRIBUTION=default
 
-FROM --platform=${BUILDPLATFORM} golang:1.15 AS src
-ARG VERSION
-RUN git clone --depth=1 -b ${VERSION} https://github.com/istio/istio /go/src/
-WORKDIR /go/src/
-RUN --mount=type=cache,id=gomod,target=/go/pkg/mod go mod download
-
 FROM istio/pilot:${VERSION} AS pilot-default-amd64
 FROM istio/pilot:${VERSION}-distroless AS pilot-distroless-amd64
 FROM pilot-${BASE_DISTRIBUTION}-amd64 AS pilot-amd64
@@ -16,12 +10,10 @@ FROM pilot-${BASE_DISTRIBUTION}-amd64 AS pilot-amd64
 FROM ghcr.io/querycap/istio/istio-base:${VERSION} AS default
 FROM ghcr.io/querycap/istio/istio-distroless:${VERSION} AS distroless
 
-FROM golang:1.15 AS pilot-arm64-builder
-
+FROM --platform=${BUILDPLATFORM} golang:1.15 AS pilot-arm64-builder
 ARG VERSION
-
-COPY --from=src /go/src /go/src
-WORKDIR /go/src
+RUN git clone --depth=1 -b ${VERSION} https://github.com/istio/istio /go/src/
+WORKDIR /go/src/
 
 # important for https://github.com/istio/istio/blob/master/common/scripts/report_build_info.sh#L42
 ENV VERSION ${VERSION}
@@ -30,7 +22,7 @@ ENV VERSION ${VERSION}
 RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
     STATIC=0 \
     GOOS=$(go env GOOS) \
-    GOARCH=$(go env GOARCH) \
+    GOARCH=arm64 \
     LDFLAGS='-extldflags -static -s -w' \
     common/scripts/gobuild.sh /go/bin/ ./pilot/cmd/pilot-discovery
 

@@ -3,12 +3,6 @@
 ARG VERSION
 ARG BASE_DISTRIBUTION=default
 
-FROM --platform=${BUILDPLATFORM} golang:1.15 AS src
-ARG VERSION
-RUN git clone --depth=1 -b ${VERSION} https://github.com/istio/istio /go/src/
-WORKDIR /go/src/
-RUN --mount=type=cache,id=gomod,target=/go/pkg/mod go mod download
-
 FROM istio/operator:${VERSION} AS operator-default-amd64
 FROM istio/operator:${VERSION}-distroless AS operator-distroless-amd64
 FROM operator-${BASE_DISTRIBUTION}-amd64 AS operator-amd64
@@ -16,12 +10,10 @@ FROM operator-${BASE_DISTRIBUTION}-amd64 AS operator-amd64
 FROM ghcr.io/querycap/istio/istio-base:${VERSION} AS default
 FROM ghcr.io/querycap/istio/istio-distroless:${VERSION} AS distroless
 
-FROM golang:1.15 AS operator-arm64-builder
-
+FROM --platform=${BUILDPLATFORM} golang:1.15 AS operator-arm64-builder
 ARG VERSION
-
-COPY --from=src /go/src /go/src
-WORKDIR /go/src
+RUN git clone --depth=1 -b ${VERSION} https://github.com/istio/istio /go/src/
+WORKDIR /go/src/
 
 # https://github.com/istio/istio/tree/master/operator#building
 RUN GO111MODULE=on go get github.com/jteeuwen/go-bindata/go-bindata@6025e8de665b
@@ -34,7 +26,7 @@ ENV VERSION ${VERSION}
 RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
     STATIC=0 \
     GOOS=$(go env GOOS) \
-    GOARCH=$(go env GOARCH) \
+    GOARCH=arm64 \
     LDFLAGS='-extldflags -static -s -w' \
     common/scripts/gobuild.sh /go/bin/ ./operator/cmd/operator
 
