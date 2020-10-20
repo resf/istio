@@ -3,7 +3,12 @@
 ARG VERSION
 ARG BASE_DISTRIBUTION=default
 
-FROM localhost:5000/src:${VERSION} AS src
+FROM --platform=${BUILDPLATFORM} golang:1.15 AS src
+ARG VERSION
+RUN git clone --depth=1 -b ${VERSION} https://github.com/istio/istio /go/src/
+WORKDIR /go/src/
+RUN --mount=type=cache,id=gomod,target=/go/pkg/mod go mod download
+
 FROM istio/proxyv2:${VERSION} AS proxyv2-default-amd64
 FROM istio/proxyv2:${VERSION}-distroless AS proxyv2-distroless-amd64
 FROM proxyv2-${BASE_DISTRIBUTION}-amd64 AS proxyv2-amd64
@@ -32,7 +37,6 @@ WORKDIR /go/src
 ENV VERSION ${VERSION}
 
 # build pilot-agent
-RUN --mount=type=cache,id=gomod,target=/go/pkg/mod go mod download -x
 RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
     STATIC=0 \
     GOOS=$(go env GOOS) \

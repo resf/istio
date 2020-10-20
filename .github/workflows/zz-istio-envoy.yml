@@ -12,11 +12,6 @@ jobs:
     - self-hosted
     - linux
     - ARM64
-    services:
-      registry:
-        image: registry:2
-        ports:
-        - 5000:5000
     defaults:
       run:
         working-directory: build/istio-envoy
