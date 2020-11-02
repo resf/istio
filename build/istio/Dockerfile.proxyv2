@@ -1,5 +1,3 @@
-# syntax = docker/dockerfile:experimental
-
 ARG VERSION
 ARG BASE_DISTRIBUTION=default
 
@@ -29,8 +27,7 @@ WORKDIR /go/src/
 ENV VERSION ${VERSION}
 
 # build pilot-agent
-RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
-    STATIC=0 \
+RUN STATIC=0 \
     GOOS=$(go env GOOS) \
     GOARCH=arm64 \
     LDFLAGS='-extldflags -static -s -w' \
