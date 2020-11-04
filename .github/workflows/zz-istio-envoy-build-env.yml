@@ -8,14 +8,19 @@ name: istio-envoy-build-env
     - build/istio-envoy-build-env/Makefile
 jobs:
   istio-envoy-build-env:
-    runs-on:
-    - ubuntu-latest
+    strategy:
+      matrix:
+        arch:
+        - amd64
+        - arm64
+    runs-on: ${{ matrix.arch != 'amd64' && fromJSON(format('["self-hosted","linux","{0}"]', matrix.arch)) || 'ubuntu-latest' }}
     defaults:
       run:
         working-directory: build/istio-envoy-build-env
+    outputs:
+      image: ${{ steps.prepare.outputs.image }}
     steps:
     - uses: actions/checkout@v2
-    - uses: docker/setup-qemu-action@v1
     - uses: docker/setup-buildx-action@v1
       with:
         driver-opts: network=host
@@ -32,16 +37,22 @@ jobs:
         registry: docker.io
         username: ${{ secrets.DOCKER_USERNAME }}
     - id: prepare
-      name: prepare
+      name: Prepare
       env:
+        GITHUB_REF: ${{ github.sha }}
+        GITHUB_SHA: ${{ github.ref }}
         NAME: istio-envoy-build-env
       run: |-
-        if [[ ${{ github.ref }} != "refs/heads/master" ]]; then
-          export TAG=temp-${{ github.sha }}
+        echo ::set-output name=image_suffix::-${{ matrix.arch }}
+        echo ::set-output name=target_platforms::linux/${{ matrix.arch }}
+
+        if [[ ${GITHUB_REF} != "refs/heads/master" ]]; then
+          export TAG=sha-${GITHUB_SHA::7}
         fi
+
         make prepare
     - uses: docker/build-push-action@v2
-      name: Push
+      name: Build & May Push
       with:
         build-args: ${{ steps.prepare.outputs.build_args }}
         context: build/istio-envoy-build-env
@@ -49,8 +60,44 @@ jobs:
         labels: |-
           org.opencontainers.image.source=https://github.com/${{ github.repository }}
           org.opencontainers.image.revision=${{ github.sha }}
-        platforms: linux/amd64,linux/arm64
+        platforms: ${{ steps.prepare.outputs.target_platforms }}
         push: ${{ github.event_name != 'pull_request' }}
         tags: |-
-          ghcr.io/querycap/istio/${{ steps.prepare.outputs.image }}
-          docker.io/querycapistio/${{ steps.prepare.outputs.image }}
+          ghcr.io/querycap/istio/${{ steps.prepare.outputs.image }}${{ steps.prepare.outputs.image_suffix }}
+          docker.io/querycapistio/${{ steps.prepare.outputs.image }}${{ steps.prepare.outputs.image_suffix }}
+  istio-envoy-build-env-combine:
+    if: ${{ github.event_name != 'pull_request' }}
+    needs:
+    - istio-envoy-build-env
+    runs-on: ubuntu-latest
+    steps:
+    - uses: docker/setup-buildx-action@v1
+      with:
+        driver-opts: network=host
+    - uses: docker/login-action@v1
+      name: Login ghcr.io
+      with:
+        password: ${{ secrets.CR_PAT }}
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+    - uses: docker/login-action@v1
+      name: Login docker.io
+      with:
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        registry: docker.io
+        username: ${{ secrets.DOCKER_USERNAME }}
+    - name: Combine
+      env:
+        HUB: ghcr.io/querycap/istio docker.io/querycapistio
+        IMAGE: ${{ needs.istio-envoy-build-env.outputs.image }}
+        TARGET_ARCH: amd64 arm64
+      run: |-
+        for h in ${HUB}; do
+          SOURCES=""
+          for arch in ${TARGET_ARCH}; do
+            SOURCES="${SOURCES} ${h}/${IMAGE}-${arch}"
+          done
+
+          docker buildx imagetools create -t ${h}/${IMAGE} ${SOURCES};
+          docker buildx imagetools inspect ${h}/${IMAGE};
+        done
