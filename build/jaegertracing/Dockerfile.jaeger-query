@@ -1,0 +1,48 @@
+# syntax = docker/dockerfile:experimental
+
+# clone src
+FROM --platform=${BUILDPLATFORM} golang:1.15 AS src
+
+ARG VERSION
+RUN git clone --depth=1 -b v${VERSION} https://github.com/jaegertracing/jaeger.git /go/src/
+WORKDIR /go/src/
+RUN git submodule update --init
+
+# build ui
+FROM --platform=${BUILDPLATFORM} node AS ui
+
+COPY --from=src /go/src/jaeger-ui /go/src/jaeger-ui
+WORKDIR /go/src/jaeger-ui
+RUN yarn install --frozen-lockfile && cd packages/jaeger-ui && yarn build
+
+# build golang
+FROM --platform=${BUILDPLATFORM} golang:1.15 AS builder
+
+COPY --from=src /go/src /go/src
+COPY --from=ui /go/src/jaeger-ui/packages/jaeger-ui/build /go/src/jaeger-ui/packages/jaeger-ui/build
+
+WORKDIR /go/src/
+
+RUN --mount=type=cache,id=gomod,target=/go/pkg/mod go get -u github.com/mjibson/esc
+
+RUN esc -pkg assets -o cmd/query/app/ui/actual/gen_assets.go -prefix jaeger-ui/packages/jaeger-ui/build jaeger-ui/packages/jaeger-ui/build
+RUN esc -pkg assets -o cmd/query/app/ui/placeholder/gen_assets.go -prefix cmd/query/app/ui/placeholder/public cmd/query/app/ui/placeholder/public
+
+ARG TARGETARCH
+RUN --mount=type=cache,id=gomod,target=/go/pkg/mod make build-query GOOS=$(go env GOOS) GOARCH=${TARGETARCH}
+
+# prepare certs
+FROM alpine:latest AS certs
+RUN apk add --update --no-cache ca-certificates
+
+# final image
+FROM scratch
+
+COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+
+EXPOSE 16686/tcp
+
+ARG TARGETARCH
+COPY --from=builder /go/src/cmd/query/query-linux-${TARGETARCH} /go/bin/query-linux
+
+ENTRYPOINT ["/go/bin/query-linux"]
