@@ -51,6 +51,12 @@ latest versions should check badges below:
 ![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/all-in-one?sort=semver) 
 ![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/all-in-one)   
 
+## `querycapistio/jaeger-query`
+
+[![Docker Version](https://img.shields.io/docker/v/querycapistio/jaeger-query?sort=semver)](https://hub.docker.com/r/querycapistio/jaeger-query/tags)
+![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/jaeger-query?sort=semver) 
+![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/jaeger-query)   
+
 # Notice
 
 * *all images tag version without `v` prefix*
