@@ -71,7 +71,7 @@ RUN set -eux; \
     chown -R root:root ${LLVM_PATH}; \
     rm -R /tmp/*
 
-FROM ubuntu:18.04
+FROM ubuntu:19.10
 
 ENV DEBIAN_FRONTEND noninteractive
 
