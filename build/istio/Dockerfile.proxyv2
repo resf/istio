@@ -9,8 +9,7 @@ FROM ghcr.io/querycap/istio/istio-base:${VERSION} AS default
 
 FROM debian:buster AS distroless-base
 
-# TODO replace until gcr.io/distroless/cc-debian10:latest lands
-FROM ghcr.io/querycap/distroless/cc-debian10:latest AS distroless
+FROM gcr.io/distroless/cc-debian10@sha256:5bc7ef365a81ac2a58de8b9606d6840ea1aa4e03847137671671384b0b1700d4 AS distroless
 
 # TODO(https://github.com/istio/istio/issues/17656) clean up this hack
 COPY --from=default /sbin/xtables-multi /sbin/iptables* /sbin/ip6tables* /sbin/ip /sbin/
