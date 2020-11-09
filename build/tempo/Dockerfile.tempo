@@ -1,0 +1,18 @@
+ARG VERSION
+
+FROM --platform=${BUILDPLATFORM} golang:1.15 AS builder
+
+ARG VERSION
+RUN git clone --depth=1 -b v${VERSION} https://github.com/grafana/tempo.git /go/src;
+WORKDIR /go/src
+
+RUN git submodule update --init
+
+ARG TARGETARCH
+RUN GOOS=$(go env GOOS) GOARCH=${TARGETARCH} make tempo && mv bin/linux/tempo bin/linux/tempo-${TARGETARCH}
+
+FROM alpine:3.9 as certs
+RUN apk --update add ca-certificates
+ARG TARGETARCH
+COPY --from=builder /go/src/bin/linux/tempo-${TARGETARCH} /tempo
+ENTRYPOINT ["/tempo"]
