@@ -9,7 +9,7 @@ WORKDIR /go/src
 RUN git submodule update --init
 
 ARG TARGETARCH
-RUN GOOS=$(go env GOOS) GOARCH=${TARGETARCH} make tempo-vulture && mv bin/linux/tempo-vulture bin/linux/tempo-vulture-${TARGETARCH}
+RUN GOOS=$(go env GOOS) GOARCH=${TARGETARCH} make tempo-vulture
 
 FROM alpine:3.9 as certs
 RUN apk --update add ca-certificates

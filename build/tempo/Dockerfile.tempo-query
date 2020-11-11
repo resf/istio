@@ -9,7 +9,7 @@ WORKDIR /go/src
 RUN git submodule update --init
 
 ARG TARGETARCH
-RUN GOOS=$(go env GOOS) GOARCH=${TARGETARCH} make tempo-query && mv bin/linux/tempo-query bin/linux/tempo-query-${TARGETARCH}
+RUN GOOS=$(go env GOOS) GOARCH=${TARGETARCH} make tempo-query
 
 
 FROM ghcr.io/querycap/istio/jaeger-query:1.20.0
