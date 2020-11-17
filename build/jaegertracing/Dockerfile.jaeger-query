@@ -31,12 +31,13 @@ RUN esc -pkg assets -o cmd/query/app/ui/placeholder/gen_assets.go -prefix cmd/qu
 ARG TARGETARCH
 RUN --mount=type=cache,id=gomod,target=/go/pkg/mod make build-query GOOS=$(go env GOOS) GOARCH=${TARGETARCH}
 
+
 # prepare certs
-FROM alpine:latest AS certs
+FROM alpine:3.12 AS certs
 RUN apk add --update --no-cache ca-certificates
 
 # final image
-FROM scratch
+FROM alpine:3.12
 
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 
