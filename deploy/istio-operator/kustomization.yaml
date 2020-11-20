@@ -1,0 +1,11 @@
+namespace: istio-operator
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+resources:
+  - crd.yaml
+  - deployment.yaml
+  - role.yaml
+  - role_binding.yaml
+  - service_account.yaml

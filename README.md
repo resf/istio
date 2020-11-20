@@ -5,7 +5,7 @@ This repo is for building oci images for istio stacks.
 ## How to use?
 
 using images under `querycapistio`, 
-example could see https://github.com/querycap/istio/blob/master/deploy/istio-operator.yaml
+example could see https://github.com/querycap/istio/blob/master/deploy
 
 latest versions should check badges below:
 

@@ -1,0 +1,44 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: istio-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: istio-operator
+  template:
+    metadata:
+      labels:
+        name: istio-operator
+    spec:
+      serviceAccountName: istio-operator
+      containers:
+        - name: istio-operator
+          image: docker.io/querycapistio/operator:1.8.0-distroless
+          command:
+            - operator
+            - server
+          env:
+            - name: WATCH_NAMESPACE
+              value: istio-system
+            - name: LEADER_ELECTION_NAMESPACE
+              value: istio-operator
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+            - name: OPERATOR_NAME
+              value: istio-operator
+            - name: WAIT_FOR_RESOURCES_TIMEOUT
+              value: 300s
+            - name: REVISION
+          resources:
+            limits:
+              cpu: 200m
+              memory: 256Mi
+            requests:
+              cpu: 50m
+              memory: 128Mi
+          imagePullPolicy: IfNotPresent

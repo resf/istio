@@ -1,0 +1,7 @@
+namespace: istio-system
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+resources:
+  - istio-operator.yaml
