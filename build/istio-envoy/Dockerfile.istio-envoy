@@ -7,7 +7,7 @@ FROM busybox as envoy-amd64
 COPY --from=proxyv2 /usr/local/bin/envoy /envoy/envoy
 COPY --from=proxyv2 /tmp/envoy-version /envoy/envoy-version
 
-FROM ghcr.io/querycap/istio/istio-envoy-build-env:0.1.0 as envoy-builder
+FROM ghcr.io/querycap/istio/istio-envoy-build-env:0.2.0 as envoy-builder
 
 ARG VERSION
 
