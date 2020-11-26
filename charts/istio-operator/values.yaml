@@ -1,0 +1,6 @@
+image:
+  hub: docker.io/querycapistio
+  tag: 1.8.0-distroless
+  pullPolicy: IfNotPresent
+
+watchNamespace: istio-system

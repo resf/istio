@@ -1,36 +1,43 @@
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: istio-operator
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      name: istio-operator
+      app: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        name: istio-operator
+        app: {{ .Release.Name }}
     spec:
-      serviceAccountName: istio-operator
+      serviceAccountName: {{ .Release.Name }}
       containers:
         - name: istio-operator
-          image: docker.io/querycapistio/operator:1.8.0-distroless
+          image: "{{ .Values.image.hub }}/operator:{{ .Values.image.tag }}"
           command:
             - operator
             - server
           env:
             - name: WATCH_NAMESPACE
-              value: istio-system
+              value: {{ .Values.watchNamespace }}
             - name: LEADER_ELECTION_NAMESPACE
-              value: istio-operator
+              value: {{ .Release.Name }}
             - name: POD_NAME
               valueFrom:
                 fieldRef:
                   apiVersion: v1
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
-              value: istio-operator
+              value: {{ .Release.Name }}
             - name: WAIT_FOR_RESOURCES_TIMEOUT
               value: 300s
             - name: REVISION
@@ -41,4 +48,4 @@ spec:
             requests:
               cpu: 50m
               memory: 128Mi
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
