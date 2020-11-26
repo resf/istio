@@ -1,4 +1,4 @@
 apiVersion: v2
 name: jaeger-operator
-version: 0.0.0
+version: 0.0.1
 kubeVersion: "^1.16.0-0"
