@@ -1,1 +1,1 @@
-FROM querycapistio/istio-base:1.8.0
+FROM querycapistio/istio-base:1.7.5
