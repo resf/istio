@@ -1,51 +1,51 @@
-kind: Deployment
 apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: {{ .Release.Name }}
-  namespace: {{ .Release.Namespace }}
-  labels:
-    app: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-  annotations:
-    meta.helm.sh/release-name: {{ .Release.Name }}
-    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+  namespace: {{.Values.operatorNamespace}}
+  name: istio-operator{{- if not (eq .Values.revision "") }}-{{ .Values.revision }}{{- end }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Release.Name }}
+      name: istio-operator
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}
+        name: istio-operator
     spec:
-      serviceAccountName: {{ .Release.Name }}
+      serviceAccountName: istio-operator{{- if not (eq .Values.revision "") }}-{{ .Values.revision }}{{- end }}
       containers:
         - name: istio-operator
-          image: "{{ .Values.image.hub }}/operator:{{ .Values.image.tag }}"
+          image: {{.Values.hub}}/operator:{{.Values.tag}}
           command:
-            - operator
-            - server
+          - operator
+          - server
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 1337
+            runAsUser: 1337
+            runAsNonRoot: true
+          imagePullPolicy: IfNotPresent
+          resources:
+{{ toYaml .Values.operator.resources | trim | indent 12 }}
           env:
             - name: WATCH_NAMESPACE
-              value: {{ .Values.watchNamespace }}
+              value: {{.Values.watchedNamespaces | quote}}
             - name: LEADER_ELECTION_NAMESPACE
-              value: {{ .Release.Name }}
+              value: {{.Values.operatorNamespace | quote}}
             - name: POD_NAME
               valueFrom:
                 fieldRef:
-                  apiVersion: v1
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
-              value: {{ .Release.Name }}
+              value: {{.Values.operatorNamespace | quote}}
             - name: WAIT_FOR_RESOURCES_TIMEOUT
-              value: 300s
+              value: {{.Values.waitForResourcesTimeout | quote}}
             - name: REVISION
-          resources:
-            limits:
-              cpu: 200m
-              memory: 256Mi
-            requests:
-              cpu: 50m
-              memory: 128Mi
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+              value: {{.Values.revision | quote}}
+---

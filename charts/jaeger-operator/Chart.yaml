@@ -1,0 +1,4 @@
+apiVersion: v2
+name: jaeger-operator
+version: 0.0.0
+kubeVersion: "^1.16.0-0"
