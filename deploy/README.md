@@ -1,9 +1,10 @@
 # Deploy
 
-# Istio Operator
+# Istio Operator (by helm)
 
 ```
-kubectl apply -k ./istio-operator
+helm repo add querycapistio https://querycap.github.io/istio
+helm install -n istio-operater querycapistio/istio-operator 
 ```
 
 # Istio System

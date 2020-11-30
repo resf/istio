@@ -4,7 +4,7 @@ This repo is for building oci images for istio stacks.
 
 ## How to use?
 
-using images under `querycapistio`, 
+using images under `docker.io/querycapistio`, 
 example could see https://github.com/querycap/istio/blob/master/deploy
 
 latest versions should check badges below:
