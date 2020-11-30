@@ -51,6 +51,24 @@ latest versions should check badges below:
 ![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/all-in-one?sort=semver) 
 ![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/all-in-one)   
 
+## `querycapistio/jaeger-agent`
+
+[![Docker Version](https://img.shields.io/docker/v/querycapistio/jaeger-agent?sort=semver)](https://hub.docker.com/r/querycapistio/jaeger-agent/tags)
+![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/jaeger-agent?sort=semver) 
+![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/jaeger-agent)   
+
+## `querycapistio/jaeger-collector`
+
+[![Docker Version](https://img.shields.io/docker/v/querycapistio/jaeger-collector?sort=semver)](https://hub.docker.com/r/querycapistio/jaeger-collector/tags)
+![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/jaeger-collector?sort=semver) 
+![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/jaeger-collector)   
+
+## `querycapistio/jaeger-ingester`
+
+[![Docker Version](https://img.shields.io/docker/v/querycapistio/jaeger-ingester?sort=semver)](https://hub.docker.com/r/querycapistio/jaeger-ingester/tags)
+![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/jaeger-ingester?sort=semver) 
+![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/jaeger-ingester)   
+
 ## `querycapistio/jaeger-query`
 
 [![Docker Version](https://img.shields.io/docker/v/querycapistio/jaeger-query?sort=semver)](https://hub.docker.com/r/querycapistio/jaeger-query/tags)
