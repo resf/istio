@@ -32,31 +32,17 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
         registry: docker.io
         username: ${{ secrets.DOCKER_USERNAME }}
-    - id: prepare
-      name: Prepare
+    - name: Build && May push
       env:
-        GITHUB_REF: ${{ github.sha }}
-        GITHUB_SHA: ${{ github.ref }}
-        NAME: tempo
+        DOCKERX_LABELS: org.opencontainers.image.source=https://github.com/${{ github.repository }} org.opencontainers.image.revision=${{ github.sha }}
+        DOCKERX_NAME: tempo
+        DOCKERX_PLATFORMS: linux/amd64 linux/arm64
+        DOCKERX_PUSH: ${{ github.event_name != 'pull_request' }}
+        GITHUB_REF: ${{ github.ref }}
+        GITHUB_SHA: ${{ github.sha }}
+        HUB: ghcr.io/querycap/istio docker.io/querycapistio
       run: |-
-        echo ::set-output name=target_platforms::linux/amd64,linux/arm64
-
         if [[ ${GITHUB_REF} != "refs/heads/master" ]]; then
-          export TAG=sha-${GITHUB_SHA::7}
+          export DOCKERX_TAGS=sha-${GITHUB_SHA::7}
         fi
-
-        make prepare
-    - uses: docker/build-push-action@v2
-      name: Build & May Push
-      with:
-        build-args: ${{ steps.prepare.outputs.build_args }}
-        context: build/tempo
-        file: build/tempo/Dockerfile.tempo
-        labels: |-
-          org.opencontainers.image.source=https://github.com/${{ github.repository }}
-          org.opencontainers.image.revision=${{ github.sha }}
-        platforms: ${{ steps.prepare.outputs.target_platforms }}
-        push: ${{ github.event_name != 'pull_request' }}
-        tags: |-
-          ghcr.io/querycap/istio/${{ steps.prepare.outputs.image }}${{ steps.prepare.outputs.image_suffix }}
-          docker.io/querycapistio/${{ steps.prepare.outputs.image }}${{ steps.prepare.outputs.image_suffix }}
+        make dockerx

@@ -1,11 +1,10 @@
 VERSION=$(shell cat Dockerfile.version | grep "^FROM " | sed -e "s/FROM.*:v\{0,\}//g" )
 
-NAME ?= istio-distroless
-TAG ?= $(VERSION)
+DOCKERX_NAME ?= istio-distroless
+DOCKERX_TAGS ?= $(VERSION)
+DOCKERX_BUILD_ARGS ?= VERSION=$(VERSION)
 
-prepare: sync-docker-base
-	@echo ::set-output name=image::$(NAME):$(TAG)
-	@echo ::set-output name=build_args::VERSION=$(VERSION)
+include ../Makefile
 
 sync-docker-base:
 	wget -O Dockerfile.istio-base https://raw.githubusercontent.com/istio/istio/$(VERSION)/docker/Dockerfile.base
