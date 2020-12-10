@@ -35,7 +35,6 @@ RUN STATIC=0 \
 ARG VERSION
 
 # built on arm64 hosts
-# see more https://github.com/querycap/istio-envoy-arm64
 FROM ghcr.io/querycap/istio/istio-envoy:${VERSION} AS envoy
 
 RUN chmod +x /envoy/envoy
