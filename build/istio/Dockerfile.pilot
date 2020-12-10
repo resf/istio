@@ -13,8 +13,12 @@ ARG VERSION
 RUN git clone --depth=1 -b ${VERSION} https://github.com/istio/istio /go/src/
 WORKDIR /go/src/
 
-# important for https://github.com/istio/istio/blob/master/common/scripts/report_build_info.sh#L42
+# important for https://github.com/istio/istio/blob/release-1.8/common/scripts/report_build_info.sh#L42
 ENV VERSION ${VERSION}
+# alias ISTIO_VERSION for 1.6.x 1.7.x
+# https://github.com/istio/istio/blob/release-1.6/common/scripts/report_build_info.sh#L39
+# https://github.com/istio/istio/blob/release-1.7/common/scripts/report_build_info.sh#L39
+ENV ISTIO_VERSION ${VERSION}
 
 # build pilot-discovery
 RUN STATIC=0 \
