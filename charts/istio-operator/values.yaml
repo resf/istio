@@ -1,5 +1,5 @@
-hub: gcr.io/istio-testing
-tag: latest
+hub: docker.io/querycapistio
+tag: 1.8.1
 
 operatorNamespace: istio-operator
 
