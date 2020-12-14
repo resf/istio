@@ -1,1 +1,1 @@
-FROM ghcr.io/querycap/istio/istio-envoy:1.7.6
+FROM ghcr.io/querycap/istio/istio-envoy:1.8.1
