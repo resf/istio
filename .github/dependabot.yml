@@ -24,8 +24,3 @@ updates:
     directory: "/build/istio-envoy-build-env"
     schedule:
       interval: "daily"
-
-  - package-ecosystem: "docker"
-    directory: "/build/jaegertracing"
-    schedule:
-      interval: "daily"

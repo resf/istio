@@ -1,4 +1,0 @@
-hub: docker.io/jaegertracing
-tag: 1.21.2
-
-watchedNamespaces: jaeger-system

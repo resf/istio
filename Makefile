@@ -14,10 +14,7 @@ dockerx.%:
 imagetools.%:
 	$(MAKE) -C build/$(call word-dot,$*,1) imagetools HUB="$(HUB)" DOCKERX_NAME=$(call word-dot,$*,2)
 
-sync: sync.istio-operator sync.jaeger-operator
+sync: sync.istio-operator
 
 sync.istio-operator:
 	bash ./tools/sync-istio-operator.sh
-
-sync.jaeger-operator:
-	bash ./tools/sync-jaeger-operator.sh
