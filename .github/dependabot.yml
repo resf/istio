@@ -31,11 +31,6 @@ updates:
       interval: "daily"
 
   - package-ecosystem: "docker"
-    directory: "/build/kiali"
-    schedule:
-      interval: "daily"
-
-  - package-ecosystem: "docker"
     directory: "/build/tempo"
     schedule:
       interval: "daily"

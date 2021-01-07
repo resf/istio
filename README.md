@@ -35,14 +35,6 @@ latest versions should check badges below:
 ![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/istio-envoy?sort=semver) 
 ![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/istio-envoy)
 
-# [`kiali`](https://github.com/kiali/kiali)
-
-## `querycapistio/kiali` 
-
-[![Docker Version](https://img.shields.io/docker/v/querycapistio/kiali?sort=semver)](https://hub.docker.com/r/querycapistio/kiali/tags)
-![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/kiali?sort=semver) 
-![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/kiali)   
-
 # [`jaegertracing`](https://github.com/jaegertracing/jaeger) 
 
 ## `querycapistio/all-in-one` 
