@@ -29,8 +29,3 @@ updates:
     directory: "/build/jaegertracing"
     schedule:
       interval: "daily"
-
-  - package-ecosystem: "docker"
-    directory: "/build/tempo"
-    schedule:
-      interval: "daily"

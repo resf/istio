@@ -67,27 +67,6 @@ latest versions should check badges below:
 ![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/jaeger-query?sort=semver) 
 ![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/jaeger-query)   
 
-
-# [`tempo`](https://github.com/grafana/tempo) 
-
-## `querycapistio/tempo` 
-
-[![Docker Version](https://img.shields.io/docker/v/querycapistio/tempo?sort=semver)](https://hub.docker.com/r/querycapistio/tempo/tags)
-![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/tempo?sort=semver) 
-![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/tempo)   
-
-## `querycapistio/tempo-query`
-
-[![Docker Version](https://img.shields.io/docker/v/querycapistio/tempo-query?sort=semver)](https://hub.docker.com/r/querycapistio/tempo-query/tags)
-![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/tempo-query?sort=semver) 
-![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/tempo-query)   
-
-## `querycapistio/tempo-vulture`
-
-[![Docker Version](https://img.shields.io/docker/v/querycapistio/tempo-vulture?sort=semver)](https://hub.docker.com/r/querycapistio/tempo-vulture/tags)
-![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/tempo-vulture?sort=semver) 
-![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/tempo-vulture)   
-
 # Notice
 
 * *all images tag version without `v` prefix*
