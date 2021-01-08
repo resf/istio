@@ -1,10 +1,10 @@
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
 metadata:
-  name: installed-state
+  name: istio
 spec:
   hub: docker.io/querycapistio
-  tag: 1.8.0-distroless
+  tag: 1.8.1-distroless
   components:
     pilot:
       k8s:
