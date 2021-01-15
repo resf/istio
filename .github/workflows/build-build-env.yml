@@ -2,7 +2,7 @@ name: istio-envoy-build-env
 "on":
   push:
     paths:
-    - .github/workflows/zz-istio-envoy-build-env.yml
+    - .github/workflows/build-build-env.yml
     - build/istio-envoy-build-env/Dockerfile.istio-envoy-build-env
     - build/istio-envoy-build-env/.version
     - build/istio-envoy-build-env/Makefile
