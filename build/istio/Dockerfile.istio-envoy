@@ -7,7 +7,7 @@ FROM busybox as envoy-amd64
 COPY --from=proxyv2 /usr/local/bin/envoy /envoy/envoy
 COPY --from=proxyv2 /tmp/envoy-version /envoy/envoy-version
 
-FROM querycapistio/istio-envoy-build-env:0.1.0 as envoy-builder
+FROM querycapistio/istio-envoy-build-env:release-1.9 as envoy-builder
 
 ARG VERSION
 
@@ -21,6 +21,7 @@ RUN git clone --depth 1 -b ${VERSION} https://github.com/istio/proxy /go/src/pro
 WORKDIR /go/src/proxy
 
 ENV ENVOY_ORG=istio
+ENV VERBOSE=1
 
 RUN make build_envoy;
 
