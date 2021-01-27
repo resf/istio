@@ -1,17 +1,17 @@
-name: istio-envoy-build-env
+name: gn
 "on":
   push:
     paths:
-    - .github/workflows/build-build-env.yml
-    - build/istio-envoy-build-env/Dockerfile.istio-envoy-build-env
-    - build/istio-envoy-build-env/.version
-    - build/istio-envoy-build-env/Makefile
+    - .github/workflows/build-gn.yml
+    - build/gn/Dockerfile.gn
+    - build/gn/.version
+    - build/gn/Makefile
 jobs:
-  istio-envoy-build-env:
+  gn:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: build/istio-envoy-build-env
+        working-directory: build/gn
     outputs:
       image: ${{ steps.prepare.outputs.image }}
     steps:
@@ -38,7 +38,7 @@ jobs:
     - name: Build && May push
       env:
         DOCKERX_LABELS: org.opencontainers.image.source=https://github.com/${{ github.repository }} org.opencontainers.image.revision=${{ github.sha }}
-        DOCKERX_NAME: istio-envoy-build-env
+        DOCKERX_NAME: gn
         DOCKERX_PLATFORMS: linux/amd64 linux/arm64
         DOCKERX_PUSH: ${{ github.event_name != 'pull_request' }}
         GITHUB_REF: ${{ github.ref }}

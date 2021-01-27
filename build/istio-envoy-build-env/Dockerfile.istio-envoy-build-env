@@ -1,105 +1,103 @@
-FROM debian:buster AS gn
+FROM docker.io/querycapistio/gn:501b49a3 AS gn
 
-RUN set -eux; \
-    \
-    apt-get update; \
-    apt-get install -qqy --no-install-recommends \
-        ca-certificates git \
-        clang python ninja-build \
-        libclang-dev libc++-dev \
-        ; \
-    rm -rf /var/lib/apt/lists/*
+FROM ubuntu:18.04 AS clang
 
-WORKDIR /tmp
+RUN apt-get update && apt-get -y dist-upgrade && apt-get install -y --no-install-recommends \
+    xz-utils \
+    wget \
+    ca-certificates \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
 
-RUN set -eux; \
-    \
-    git clone https://gn.googlesource.com/gn; \
-    cd gn; \
-    git checkout 501b49a3; \
-    python build/gen.py; \
-    ninja -v -C out; \
-    out/gn_unittests; \
-    mkdir -p /gn; \
-    cp /tmp/gn/out/gn /gn/gn; \
-    /gn/gn --version;
-
-FROM golang:1.15 AS bazel
+ENV LLVM_DIRECTORY=/usr/lib/llvm-10
 
 RUN set -eux; \
     \
     case $(uname -m) in \
-        x86_64) export BAZEL_BIN_URL=https://github.com/bazelbuild/bazelisk/releases/download/v1.6.1/bazelisk-linux-amd64;; \
-        aarch64) export BAZEL_BIN_URL=https://github.com/Tick-Tocker/bazelisk-arm64/releases/download/arm64/bazelisk-linux-arm64;; \
+        x86_64) \
+            export LLVM_ARCHIVE=clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04; \
+            export LLVM_ARCHIVE_URL=https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/${LLVM_ARCHIVE}.tar.xz; \
+            ;; \
+        aarch64) \
+            export LLVM_ARCHIVE=clang+llvm-10.0.1-aarch64-linux-gnu; \
+            export LLVM_ARCHIVE_URL=https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.1/${LLVM_ARCHIVE}.tar.xz; \
+            ;; \
         *) echo "unsupported architecture"; exit 1 ;; \
     esac; \
     \
-    wget -O /usr/local/bin/bazel ${BAZEL_BIN_URL}; \
+    wget -O ${LLVM_ARCHIVE}.tar.xz "${LLVM_ARCHIVE_URL}"; \
+    tar -Jxf ./${LLVM_ARCHIVE}.tar.xz -C /tmp; \
+    mkdir -p ${LLVM_DIRECTORY}; \
+    mv /tmp/${LLVM_ARCHIVE}/* ${LLVM_DIRECTORY}/; \
+    chown -R root:root ${LLVM_DIRECTORY}; \
+    rm -R /tmp/*
+
+
+FROM golang:1.15 AS bazel
+
+ARG TARGETARCH
+RUN set -eux; \
+    \
+    wget -O /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.7.4/bazelisk-linux-${TARGETARCH:-arm64}; \
     chmod +x /usr/local/bin/bazel
 
 RUN go get github.com/bazelbuild/buildtools/buildifier
 RUN go get github.com/bazelbuild/buildtools/buildozer
 
-FROM debian:buster AS llvm-src
-
-RUN set -eux; \
-    \
-    apt-get update; \
-    apt-get install -qqy --no-install-recommends \
-        ca-certificates wget xz-utils;
-
-ENV LLVM_VERSION=9.0.0
-ENV LLVM_PATH=/usr/lib/llvm-9
-
-WORKDIR /tmp
-
-RUN set -eux; \
-    \
-    case $(uname -m) in \
-        x86_64) export LLVM_RELEASE=clang+llvm-${LLVM_VERSION}-x86_64-linux-gnu-ubuntu-18.04;; \
-        aarch64) export LLVM_RELEASE=clang+llvm-${LLVM_VERSION}-aarch64-linux-gnu;; \
-        *) echo "unsupported architecture"; exit 1 ;; \
-    esac; \
-    \
-    wget -O ${LLVM_RELEASE}.tar.xz "https://releases.llvm.org/${LLVM_VERSION}/${LLVM_RELEASE}.tar.xz"; \
-    \
-    ls -al;\
-    tar -Jxf ./${LLVM_RELEASE}.tar.xz; \
-    mkdir -p ${LLVM_PATH}; \
-    ls ./${LLVM_RELEASE}; \
-    cp -R ${LLVM_RELEASE}/* ${LLVM_PATH}/; \
-    chown -R root:root ${LLVM_PATH}; \
-    rm -R /tmp/*
-
 FROM ubuntu:18.04
 
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN set -eux; \
-    \
-    apt-get update; \
-    apt-get install -y \
-    build-essential \
-    apt-utils \
-    unzip \
-    git \
-    make \
-    cmake \
-    automake \
-    autoconf \
-    libtool \
-    virtualenv \
-    python \
-    vim \
-    g++ \
-    wget \
-    ninja-build \
-    curl \
-    lsb-core \
-    openjdk-11-jdk \
-    software-properties-common \
-    ; \
-    rm -rf /var/lib/apt/lists/*;
+# copy from  https://github.com/istio/tools/blob/release-1.9/docker/build-tools/Dockerfile#L611-L636
+RUN apt-get update && apt-get -y dist-upgrade && apt-get install -y --no-install-recommends \
+        apt-transport-https \
+        ca-certificates \
+        curl \
+        gnupg-agent \
+        software-properties-common \
+        ca-certificates \
+        gcc \
+        git \
+        ssh \
+        libltdl7 \
+        libc-dev \
+        make \
+        pkg-config \
+        python3 \
+        python3-setuptools \
+        daemon \
+        wget \
+        jq \
+        tshark \
+        && apt-get clean \
+        && rm -rf /var/lib/apt/lists/*
+
+# copy from https://github.com/istio/tools/blob/release-1.9/docker/build-tools/Dockerfile#L658-L671
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        autoconf \
+        automake \
+        cmake \
+        libtool \
+        ninja-build \
+        python \
+        unzip \
+        virtualenv \
+        && apt-get clean \
+        && rm -rf /var/lib/apt/lists/*
+
+
+# llvm
+ENV LLVM_DIRECTORY=/usr/lib/llvm-10
+
+COPY --from=clang ${LLVM_DIRECTORY}/lib ${LLVM_DIRECTORY}/lib
+COPY --from=clang ${LLVM_DIRECTORY}/bin ${LLVM_DIRECTORY}/bin
+COPY --from=clang ${LLVM_DIRECTORY}/include ${LLVM_DIRECTORY}/include
+
+ENV PATH=${LLVM_DIRECTORY}/bin:${PATH}
+
+RUN echo "${LLVM_DIRECTORY}/lib" | tee /etc/ld.so.conf.d/llvm.conf
+
+RUN ldconfig
 
 # bazel
 COPY --from=bazel /usr/local/bin/bazel /usr/local/bin/bazel
@@ -108,13 +106,3 @@ COPY --from=bazel /go/bin/buildozer /usr/local/bin/buildozer
 
 # gn
 COPY --from=gn /gn/gn /usr/local/bin/gn
-
-# llvm-9
-ENV LLVM_VERSION=9.0.0
-ENV LLVM_PATH=/usr/lib/llvm-9
-
-COPY --from=llvm-src ${LLVM_PATH} ${LLVM_PATH}
-
-RUN echo "${LLVM_PATH}/lib" > /etc/ld.so.conf.d/llvm.conf && ldconfig;
-
-ENV PATH="${LLVM_PATH}/bin:${PATH}"
