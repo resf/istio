@@ -6,7 +6,7 @@
 
 ```
 helm repo add querycapistio https://querycap.github.io/istio
-helm install -n istio-operater querycapistio/istio-operator 
+helm install -n istio-operator querycapistio/istio-operator 
 ```
 
 2. create a IstioOperator spec file and deploy it by kubectl, with
