@@ -8,7 +8,7 @@ FROM operator-${BASE_DISTRIBUTION}-amd64 AS operator-amd64
 FROM ghcr.io/querycap/istio/istio-base:${VERSION} AS default
 FROM ghcr.io/querycap/istio/istio-distroless:${VERSION} AS distroless
 
-FROM --platform=${BUILDPLATFORM} golang:1.16.0 AS operator-arm64-builder
+FROM --platform=${BUILDPLATFORM} golang:1.16.2 AS operator-arm64-builder
 ARG VERSION
 RUN git clone --depth=1 -b ${VERSION} https://github.com/istio/istio /go/src/
 WORKDIR /go/src/
