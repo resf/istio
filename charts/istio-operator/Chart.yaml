@@ -1,4 +1,0 @@
-apiVersion: v2
-name: istio-operator
-version: 1.8.0
-description: Helm chart for deploying Istio operator
