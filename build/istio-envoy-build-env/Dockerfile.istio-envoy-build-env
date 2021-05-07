@@ -33,7 +33,7 @@ RUN set -eux; \
     rm -R /tmp/*
 
 
-FROM golang:1.16.3 AS bazel
+FROM golang:1.16.4 AS bazel
 
 ARG TARGETARCH
 RUN set -eux; \
