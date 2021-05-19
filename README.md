@@ -38,6 +38,8 @@ EOF
 
 notice the `spec.hub`, if deploy failed on arm64 hosts. should set `spec.components.*.k8s.affinity`, like
 
+since 1.10.x, `values.global.arch` [deprecated](https://istio.io/latest/news/releases/1.10.x/announcing-1.10/change-notes/#deprecation-notices), we may not need this any more.
+
 ```yaml
 spec:
   components:
