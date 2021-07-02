@@ -4,13 +4,3 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-
-  - package-ecosystem: "docker"
-    directory: "/build/istio"
-    schedule:
-      interval: "daily"
-
-  - package-ecosystem: "docker"
-    directory: "/build/istio-envoy-build-env"
-    schedule:
-      interval: "daily"
