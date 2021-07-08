@@ -47,7 +47,7 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
           HUB: ghcr.io/querycap/istio docker.io/querycapistio
         run: |-
-          if [[ ${GITHUB_REF} != "refs/heads/master" ]]; then
+          if [[ ${GITHUB_REF} != "refs/heads/release-"* ]]; then
             export DOCKERX_TAGS=sha-${GITHUB_SHA::7}
           fi
           make dockerx
@@ -86,7 +86,7 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
           HUB: ghcr.io/querycap/istio docker.io/querycapistio
         run: |-
-          if [[ ${GITHUB_REF} != "refs/heads/master" ]]; then
+          if [[ ${GITHUB_REF} != "refs/heads/release-"* ]]; then
             export DOCKERX_TAGS=sha-${GITHUB_SHA::7}
           fi
           make dockerx
@@ -144,7 +144,7 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
           HUB: ghcr.io/querycap/istio docker.io/querycapistio
         run: |-
-          if [[ ${GITHUB_REF} != "refs/heads/master" ]]; then
+          if [[ ${GITHUB_REF} != "refs/heads/release-"* ]]; then
             export DOCKERX_TAGS=sha-${GITHUB_SHA::7}
           fi
           make dockerx
