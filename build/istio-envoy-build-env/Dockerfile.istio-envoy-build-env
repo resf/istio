@@ -57,7 +57,7 @@ RUN set -eux; \
     rm -R /tmp/*
 
 
-FROM golang:1.16.5 AS bazel
+FROM golang:1.17beta1 AS bazel
 
 ARG TARGETARCH
 RUN set -eux; \
