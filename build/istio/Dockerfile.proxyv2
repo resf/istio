@@ -17,7 +17,7 @@ COPY --from=default /usr/lib/aarch64-linux-gnu/xtables/ /usr/lib/aarch64-linux-g
 COPY --from=default /usr/lib/aarch64-linux-gnu/ /usr/lib/aarch64-linux-gnu
 COPY --from=default /etc/iproute2 /etc/iproute2
 
-FROM --platform=${BUILDPLATFORM} golang:1.16.5 AS proxyv2-arm64-builder
+FROM --platform=${BUILDPLATFORM} golang:1.17beta1 AS proxyv2-arm64-builder
 ARG VERSION
 RUN git clone --depth=1 -b ${VERSION} https://github.com/istio/istio /go/src/
 WORKDIR /go/src/
