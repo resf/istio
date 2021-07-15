@@ -2,8 +2,6 @@ name: istio
 
 "on":
   push:
-#    tags:
-#      - v*
     paths:
       - .github/workflows/istio.yml
 
@@ -13,8 +11,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: false
 
       - uses: docker/setup-buildx-action@v1
         with:
@@ -27,33 +23,21 @@ jobs:
           registry: docker.io
           username: ${{ secrets.DOCKER_USERNAME }}
 
-      - run:
-          make build.envoy
-
-      #      # for debug
-      #      - uses: dawidd6/action-download-artifact@v2
-      #        with:
-      #          workflow: envoy
-      #          run_id: 1025483310
-      #          name: envoy-linux-arm64
-      #          path: .tmp/proxy/bazel-bin/src/envoy
+      - run: make build.envoy
 
       - uses: actions/upload-artifact@v2
         with:
           name: envoy-linux-arm64
-          path: |
-            .tmp/proxy/bazel-bin/src/envoy/envoy
+          path: .tmp/envoy-linux-arm64
 
   istio:
     needs:
       - envoy-arm64
 
-    runs-on: ubuntu-latest
+    runs-on: [ "self-hosted", "linux", "ARM64" ]
 
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: false
 
       - uses: docker/setup-qemu-action@v1
       - uses: docker/setup-buildx-action@v1
@@ -72,4 +56,14 @@ jobs:
           name: envoy-linux-arm64
           path: .tmp/envoy-linux-arm64
 
-      - run: make dockerx.istio
+      #      - uses: dawidd6/action-download-artifact@v2
+      #        with:
+      #          workflow: envoy
+      #          run_id: 1030924878
+      #          name: envoy-linux-arm64
+      #          path: .tmp/envoy-linux-arm64
+
+      - name: Build Istio Images
+        run: |
+          export HOME=$(echo ~);
+          make dockerx.istio;
