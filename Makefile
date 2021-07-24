@@ -65,7 +65,7 @@ clone.istio:
 	$(GIT_CLONE) --depth=1 https://github.com/istio/istio.git $(TEMP_ROOT)/istio
 
 
-ISTIO_ENVOY_LINUX_ARM64_RELEASE_DIR = $(TEMP_ROOT)/istio/out/linux_arm64/release
+ISTIO_LINUX_ARM64_RELEASE_DIR = $(TEMP_ROOT)/istio/out/linux_arm64/release
 
 AGENT_BINARIES := ./pilot/cmd/pilot-agent
 STANDARD_BINARIES := ./pilot/cmd/pilot-discovery ./operator/cmd/operator
@@ -74,12 +74,12 @@ ISTIO_MAKE = cd $(TEMP_ROOT)/istio && IMG=$(BUILD_TOOLS_IMAGE) HUB=$(HUB) BASE_V
 
 # Build istio binaries and copy envoy binary for arm64
 # in github actions it will download from artifacts
-build.istio:
+build.istio: cleanup.istio clone.istio
 	cd $(TEMP_ROOT)/istio \
     	&& $(ISTIO_MAKE) build-linux TARGET_ARCH=amd64 STANDARD_BINARIES="$(STANDARD_BINARIES)" AGENT_BINARIES="$(AGENT_BINARIES)"
 	cd $(TEMP_ROOT)/istio \
 		&& $(ISTIO_MAKE) build-linux TARGET_ARCH=arm64 STANDARD_BINARIES="$(STANDARD_BINARIES)" AGENT_BINARIES="$(AGENT_BINARIES)" \
-		&& cp $(TEMP_ROOT)/envoy-linux-arm64/envoy $(ISTIO_ENVOY_LINUX_ARM64_RELEASE_DIR)/envoy
+		&& cp $(TEMP_ROOT)/envoy-linux-arm64/envoy $(ISTIO_LINUX_ARM64_RELEASE_DIR)/envoy
 
 ESCAPED_HUB := $(shell echo $(HUB) | sed "s/\//\\\\\//g")
 
@@ -97,8 +97,12 @@ dockerx.istio-base:
 	$(ISTIO_MAKE) dockerx.distroless DOCKERX_PUSH=true DOCKER_ARCHITECTURES=linux/amd64,linux/arm64
 
 COMPONENTS = proxyv2 pilot operator
-dockerx.istio-components: dockerx.istio.prepare dockerx.istio-base
+dockerx.istio-images: dockerx.istio.prepare dockerx.istio-base
 	$(foreach component,$(COMPONENTS),cd $(TEMP_ROOT)/istio && $(ISTIO_MAKE) dockerx.$(component) DOCKERX_PUSH=true DOCKER_BUILD_VARIANTS="default distroless" DOCKER_ARCHITECTURES=linux/amd64,linux/arm64;)
 
-# Build istio images as multi-arch
-dockerx.istio: cleanup.istio clone.istio build.istio dockerx.istio-components
+# Build istio deb
+deb:
+	$(ISTIO_MAKE) deb TARGET_ARCH=arm64
+	mkdir -p $(TEMP_ROOT)/deb
+	cp $(ISTIO_LINUX_ARM64_RELEASE_DIR)/istio-sidecar.deb $(TEMP_ROOT)/istio-sidecar.deb
+	cp $(ISTIO_LINUX_ARM64_RELEASE_DIR)/istio.deb $(TEMP_ROOT)/istio.deb

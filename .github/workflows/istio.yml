@@ -59,11 +59,23 @@ jobs:
       #      - uses: dawidd6/action-download-artifact@v2
       #        with:
       #          workflow: envoy
-      #          run_id: 1030924878
+      #          run_id: 1059613534
       #          name: envoy-linux-arm64
       #          path: .tmp/envoy-linux-arm64
 
+      - name: Build Istio
+        run: |
+          HOME=$(echo ~) make build.istio;
+
       - name: Build Istio Images
         run: |
-          export HOME=$(echo ~);
-          make dockerx.istio;
+          HOME=$(echo ~) make dockerx.istio-images;
+
+      - name: Package to deb
+        run: |
+          HOME=$(echo ~) make deb;
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: istio-deb-arm64
+          path: .tmp/*.deb
