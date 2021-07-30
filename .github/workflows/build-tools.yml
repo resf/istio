@@ -4,6 +4,7 @@ name: build-tools
   push:
     paths:
       - .github/workflows/build-tools.yml
+      - Dockerfile.version
 
 jobs:
   build-tools:
