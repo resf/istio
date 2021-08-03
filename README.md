@@ -1,6 +1,7 @@
 # Istio OCI Images (`linux/arm64, linux/amd64`)
 
-This repo is for building oci images for istio stacks.
+This repo is for building oci images for istio stacks 
+(until [official supports](https://github.com/istio/istio/issues/26652#issuecomment-872702369)).
 
 ## How to use?
 
@@ -82,12 +83,6 @@ spec:
 [![Docker Version](https://img.shields.io/docker/v/querycapistio/operator?sort=semver)](https://hub.docker.com/r/querycapistio/operator/tags)
 ![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/operator?sort=semver)
 ![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/operator)
-
-## `querycapistio/istio-envoy:{VERSION}`
-
-[![Docker Version](https://img.shields.io/docker/v/querycapistio/istio-envoy?sort=semver)](https://hub.docker.com/r/querycapistio/istio-envoy/tags)
-![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/istio-envoy?sort=semver)
-![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/istio-envoy)
 
 # Notice
 
