@@ -5,6 +5,7 @@ name: build-tools
     paths:
       - .github/workflows/build-tools.yml
       - Dockerfile.version
+      - Makefile
 
 jobs:
   build-tools:

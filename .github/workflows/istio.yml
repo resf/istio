@@ -5,6 +5,7 @@ name: istio
     paths:
       - .github/workflows/istio.yml
       - Dockerfile.version
+      - Makefile
 
 jobs:
   envoy-arm64:
