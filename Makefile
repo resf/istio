@@ -70,7 +70,7 @@ ISTIO_LINUX_ARM64_RELEASE_DIR = $(TEMP_ROOT)/istio/out/linux_arm64/release
 AGENT_BINARIES := ./pilot/cmd/pilot-agent
 STANDARD_BINARIES := ./pilot/cmd/pilot-discovery ./operator/cmd/operator
 
-ISTIO_MAKE = cd $(TEMP_ROOT)/istio && IMG=$(BUILD_TOOLS_IMAGE) HUB=$(HUB) BASE_VERSION=$(TAG) TAG=$(TAG) make
+ISTIO_MAKE = cd $(TEMP_ROOT)/istio && IMG=$(BUILD_TOOLS_IMAGE) HUB=$(HUB) VERSION=$(VERSION) BASE_VERSION=$(TAG) TAG=$(TAG) make
 
 # Build istio binaries and copy envoy binary for arm64
 # in github actions it will download from artifacts
