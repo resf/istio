@@ -39,11 +39,13 @@ dockerx.build-tools: clean.build-tools clone.build-tools
 cleanup.envoy:
 	rm -rf $(TEMP_ROOT)/proxy
 
+ISTIO_ENVOY_VERSION = $(shell cat $(TEMP_ROOT)/istio/istio.deps | grep lastStableSHA | sed 's/.*"lastStableSHA": "\([a-zA-Z0-9]*\)"/\1/g')
+
 # Clone istio/proxy
 # To checkout last stable sha from istio/istio
 clone.envoy: cleanup.istio clone.istio
 	git clone https://github.com/istio/proxy.git $(TEMP_ROOT)/proxy
-	cd $(TEMP_ROOT)/proxy && git checkout $(shell cat $(TEMP_ROOT)/istio/istio.deps | grep lastStableSHA | sed 's/.*"lastStableSHA": "\([a-zA-Z0-9]*\)"/\1/g')
+	cd $(TEMP_ROOT)/proxy && git checkout $(ISTIO_ENVOY_VERSION)
 
 # Build envoy
 # /tmp/bazel here should must be link here, cause, bazel-out is symlink to TEST_TMPDIR
@@ -65,21 +67,56 @@ clone.istio:
 	$(GIT_CLONE) --depth=1 https://github.com/istio/istio.git $(TEMP_ROOT)/istio
 
 
-ISTIO_LINUX_ARM64_RELEASE_DIR = $(TEMP_ROOT)/istio/out/linux_arm64/release
-
 AGENT_BINARIES := ./pilot/cmd/pilot-agent
 STANDARD_BINARIES := ./pilot/cmd/pilot-discovery ./operator/cmd/operator
 
 ISTIO_MAKE = cd $(TEMP_ROOT)/istio && IMG=$(BUILD_TOOLS_IMAGE) HUB=$(HUB) VERSION=$(VERSION) BASE_VERSION=$(TAG) TAG=$(TAG) make
 
+DOCKER_COPY = docker run --rm \
+              		--platform=linux/amd64 \
+              		-v=$(TEMP_ROOT)/envoy-linux-amd64:/tmp \
+              		--entrypoint=/bin/cp \
+              		docker.io/istio/proxyv2:$(VERSION)
+
+copy.envoy.from-image:
+	$(DOCKER_COPY) /usr/local/bin/envoy /tmp/envoy
+	$(DOCKER_COPY) -r /etc/istio/extensions /tmp/extensions
+
+ISTIO_LINUX_AMD64_RELEASE_DIR = $(TEMP_ROOT)/istio/out/linux_amd64/release
+ISTIO_LINUX_ARM64_RELEASE_DIR = $(TEMP_ROOT)/istio/out/linux_arm64/release
+
+## avoid to download from google storage
+## envoy-centos-$(ISTIO_ENVOY_VERSION) just a hack
+copy.envoy: copy.envoy.from-image copy.envoy-amd64 copy.envoy-arm64 copy.wasm
+
+copy.wasm:
+	for f in $(TEMP_ROOT)/envoy-linux-amd64/extensions/*.wasm; do \
+  		filename=$$(basename $${f}); \
+  		cp $${f} "$(ISTIO_LINUX_AMD64_RELEASE_DIR)/$${filename}"; \
+		cp $${f} "$(ISTIO_LINUX_AMD64_RELEASE_DIR)/$$(echo $${filename} | sed "s/-/_/g" | sed "s/_filter/-$(ISTIO_ENVOY_VERSION)/")"; \
+  		cp $${f} "$(ISTIO_LINUX_ARM64_RELEASE_DIR)/$${filename}"; \
+		cp $${f} "$(ISTIO_LINUX_ARM64_RELEASE_DIR)/$$(echo $${filename} | sed "s/-/_/g" | sed "s/_filter/-$(ISTIO_ENVOY_VERSION)/")"; \
+	done
+
+copy.envoy-amd64:
+	rm -rf $(ISTIO_LINUX_AMD64_RELEASE_DIR) && mkdir -p $(ISTIO_LINUX_AMD64_RELEASE_DIR)
+	cp $(TEMP_ROOT)/envoy-linux-amd64/envoy $(ISTIO_LINUX_AMD64_RELEASE_DIR)/envoy
+	cp $(TEMP_ROOT)/envoy-linux-amd64/envoy $(ISTIO_LINUX_AMD64_RELEASE_DIR)/envoy-$(ISTIO_ENVOY_VERSION)
+	cp $(TEMP_ROOT)/envoy-linux-amd64/envoy $(ISTIO_LINUX_AMD64_RELEASE_DIR)/envoy-centos-$(ISTIO_ENVOY_VERSION)
+
+copy.envoy-arm64:
+	rm -rf $(ISTIO_LINUX_ARM64_RELEASE_DIR) && mkdir -p $(ISTIO_LINUX_ARM64_RELEASE_DIR)
+	cp $(TEMP_ROOT)/envoy-linux-arm64/envoy $(ISTIO_LINUX_ARM64_RELEASE_DIR)/envoy
+	cp $(TEMP_ROOT)/envoy-linux-arm64/envoy $(ISTIO_LINUX_ARM64_RELEASE_DIR)/envoy-$(ISTIO_ENVOY_VERSION)
+	cp $(TEMP_ROOT)/envoy-linux-arm64/envoy $(ISTIO_LINUX_ARM64_RELEASE_DIR)/envoy-centos-$(ISTIO_ENVOY_VERSION)
+
 # Build istio binaries and copy envoy binary for arm64
 # in github actions it will download from artifacts
-build.istio: cleanup.istio clone.istio
+build.istio: cleanup.istio clone.istio copy.envoy
 	cd $(TEMP_ROOT)/istio \
     	&& $(ISTIO_MAKE) build-linux TARGET_ARCH=amd64 STANDARD_BINARIES="$(STANDARD_BINARIES)" AGENT_BINARIES="$(AGENT_BINARIES)"
 	cd $(TEMP_ROOT)/istio \
-		&& $(ISTIO_MAKE) build-linux TARGET_ARCH=arm64 STANDARD_BINARIES="$(STANDARD_BINARIES)" AGENT_BINARIES="$(AGENT_BINARIES)" \
-		&& cp $(TEMP_ROOT)/envoy-linux-arm64/envoy $(ISTIO_LINUX_ARM64_RELEASE_DIR)/envoy
+		&& $(ISTIO_MAKE) build-linux TARGET_ARCH=arm64 STANDARD_BINARIES="$(STANDARD_BINARIES)" AGENT_BINARIES="$(AGENT_BINARIES)"
 
 ESCAPED_HUB := $(shell echo $(HUB) | sed "s/\//\\\\\//g")
 
