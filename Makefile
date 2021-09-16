@@ -66,10 +66,6 @@ cleanup.istio:
 clone.istio:
 	$(GIT_CLONE) --depth=1 https://github.com/istio/istio.git $(TEMP_ROOT)/istio
 
-
-AGENT_BINARIES := ./pilot/cmd/pilot-agent
-STANDARD_BINARIES := ./pilot/cmd/pilot-discovery ./operator/cmd/operator
-
 ISTIO_MAKE = cd $(TEMP_ROOT)/istio && IMG=$(BUILD_TOOLS_IMAGE) HUB=$(HUB) VERSION=$(VERSION) BASE_VERSION=$(TAG) TAG=$(TAG) make
 
 DOCKER_COPY = docker run --rm \
@@ -114,9 +110,9 @@ copy.envoy-arm64:
 # in github actions it will download from artifacts
 build.istio: cleanup.istio clone.istio copy.envoy
 	cd $(TEMP_ROOT)/istio \
-    	&& $(ISTIO_MAKE) build-linux TARGET_ARCH=amd64 STANDARD_BINARIES="$(STANDARD_BINARIES)" AGENT_BINARIES="$(AGENT_BINARIES)"
+    	&& $(ISTIO_MAKE) build-linux TARGET_ARCH=amd64
 	cd $(TEMP_ROOT)/istio \
-		&& $(ISTIO_MAKE) build-linux TARGET_ARCH=arm64 STANDARD_BINARIES="$(STANDARD_BINARIES)" AGENT_BINARIES="$(AGENT_BINARIES)"
+		&& $(ISTIO_MAKE) build-linux TARGET_ARCH=arm64
 
 ESCAPED_HUB := $(shell echo $(HUB) | sed "s/\//\\\\\//g")
 
@@ -126,6 +122,7 @@ dockerx.istio.prepare:
 	sed -i -e 's/gcr.io\/istio-release\/\(base\|distroless\)/$(ESCAPED_HUB)\/\1/g' $(TEMP_ROOT)/istio/pilot/docker/Dockerfile.pilot
 	sed -i -e 's/gcr.io\/istio-release\/\(base\|distroless\)/$(ESCAPED_HUB)\/\1/g' $(TEMP_ROOT)/istio/pilot/docker/Dockerfile.proxyv2
 	sed -i -e 's/gcr.io\/istio-release\/\(base\|distroless\)/$(ESCAPED_HUB)\/\1/g' $(TEMP_ROOT)/istio/operator/docker/Dockerfile.operator
+	sed -i -e 's/gcr.io\/istio-release\/\(base\|distroless\)/$(ESCAPED_HUB)\/\1/g' $(TEMP_ROOT)/istio/cni/deployments/kubernetes/Dockerfile.install-cni
 	docker pull $(BUILD_TOOLS_IMAGE)
 
 # Build istio base images as multi-arch
@@ -133,7 +130,7 @@ dockerx.istio-base:
 	$(ISTIO_MAKE) dockerx.base DOCKERX_PUSH=true DOCKER_ARCHITECTURES=linux/amd64,linux/arm64
 	$(ISTIO_MAKE) dockerx.distroless DOCKERX_PUSH=true DOCKER_ARCHITECTURES=linux/amd64,linux/arm64
 
-COMPONENTS = proxyv2 pilot operator
+COMPONENTS = proxyv2 pilot operator install-cni
 dockerx.istio-images: dockerx.istio.prepare dockerx.istio-base
 	$(foreach component,$(COMPONENTS),cd $(TEMP_ROOT)/istio && $(ISTIO_MAKE) dockerx.$(component) DOCKERX_PUSH=true DOCKER_BUILD_VARIANTS="default distroless" DOCKER_ARCHITECTURES=linux/amd64,linux/arm64;)
 
