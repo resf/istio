@@ -1,6 +1,6 @@
 # Istio OCI Images (`linux/arm64, linux/amd64`)
 
-This repo is for building oci images for istio stacks 
+This repo is for building oci images for istio stacks
 (until [official supports](https://github.com/istio/istio/issues/26652#issuecomment-872702369)).
 
 ## How to use?
@@ -39,7 +39,9 @@ EOF
 
 notice the `spec.hub`, if deploy failed on arm64 hosts. should set `spec.components.*.k8s.affinity`, like
 
-since 1.10.x, `values.global.arch` [deprecated](https://istio.io/latest/news/releases/1.10.x/announcing-1.10/change-notes/#deprecation-notices), we may not need this any more.
+since
+1.10.x, `values.global.arch` [deprecated](https://istio.io/latest/news/releases/1.10.x/announcing-1.10/change-notes/#deprecation-notices)
+, we may not need this any more.
 
 ```yaml
 spec:
@@ -57,10 +59,12 @@ spec:
                         - arm64
                         - amd64
     egressGateways:
-      - k8s:
+      - name: "istio-egressgateway"
+        k8s:
           affinity: *affinity
     ingressGateways:
-      - k8s:
+      - name: "istio-ingressgateway"
+        k8s:
           affinity: *affinity
 ```
 
