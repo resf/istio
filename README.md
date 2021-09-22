@@ -88,6 +88,13 @@ spec:
 ![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/operator?sort=semver)
 ![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/operator)
 
+
+## `querycapistio/install-cni:{VERSION}[-distroless]`
+
+[![Docker Version](https://img.shields.io/docker/v/querycapistio/install-cni?sort=semver)](https://hub.docker.com/r/querycapistio/install-cni/tags)
+![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/install-cni?sort=semver)
+![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/install-cni)
+
 # Notice
 
 * *all images tag version without `v` prefix* like official did
