@@ -2,6 +2,8 @@ name: istio
 
 "on":
   push:
+    branches:
+      - release-1.13
     paths:
       - .github/workflows/istio.yml
       - Dockerfile.version
