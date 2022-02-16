@@ -25,15 +25,13 @@ echo:
 	@echo "TAG: $(TAG)"
 	@echo "RELEASE_BRANCH: $(RELEASE_BRANCH)"
 
-clean.build-tools:
-	rm -rf $(TEMP_ROOT)/tools
-
-clone.build-tools:
-	$(GIT_CLONE_TOOLS) --depth=1 https://github.com/istio/tools.git $(TEMP_ROOT)/tools
+ensure.build-tools:
+	 sed -i -e 's/release-[0-9.]*/$(RELEASE_BRANCH)/g' .gitmodules
+	 git submodule update --init --remote --force
 
 # Build build-tools && build-tools-proxy for arm64
-dockerx.build-tools: clean.build-tools clone.build-tools
-	cd $(TEMP_ROOT)/tools/docker/build-tools \
+dockerx.build-tools:
+	cd tools/docker/build-tools \
 		&& DRY_RUN=1 HUB=$(HUB) CONTAINER_BUILDER="buildx build --push --platform=linux/arm64" ./build-and-push.sh
 
 cleanup.envoy:
