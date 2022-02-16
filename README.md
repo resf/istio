@@ -88,7 +88,6 @@ spec:
 ![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/operator?sort=semver)
 ![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/operator)
 
-
 ## `querycapistio/install-cni:{VERSION}[-distroless]`
 
 [![Docker Version](https://img.shields.io/docker/v/querycapistio/install-cni?sort=semver)](https://hub.docker.com/r/querycapistio/install-cni/tags)
@@ -98,3 +97,33 @@ spec:
 # Notice
 
 * *all images tag version without `v` prefix* like official did
+* Release only the [supported releases](https://istio.io/latest/docs/releases/supported-releases/)
+
+```mermaid
+%%{init:{'theme':'base'}}%%
+flowchart TD
+    dependabot
+    
+    ga_build_tools("github actions build-tools")
+    
+    subgraph ga_isito ["github actions istio"]
+        build_envoy_arm64["build envoy for arm64"]
+        build_istio["build istio"]
+        
+        build_envoy_arm64
+        --> build_istio
+    end   
+    
+    build_tools_images("querycapistio/build-tools[-proxy]:release-<VERSION_MINOR>-latest")
+    istio_images("querycapistio/*:<VERSION>*[-distroless]")
+    
+    dependabot
+    -->|"upgrade if need"|gitmodules("tools commitsha in gitmodules")
+    -->|"merge & trigger"|ga_build_tools 
+    -->|"build & push"|build_tools_images
+    
+    dependabot
+    -->|"upgrade if need"|Dockerfile("patch version in Dockerfile.version")
+    -->|"merge & trigger"|ga_isito
+    -->|"build & push"|istio_images
+```
