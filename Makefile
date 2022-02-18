@@ -141,5 +141,5 @@ deb:
 
 check.istio:
 	@echo "ISTIO_ENVOY_VERSION: $(ISTIO_ENVOY_VERSION)"
-	docker pull --platform=linux/arm64 docker.io/querycapistio/proxyv2:$(VERSION)-distroless
-	docker run --rm --platform=linux/arm64 --entrypoint=/usr/local/bin/envoy docker.io/querycapistio/proxyv2:$(VERSION)-distroless --version
+	docker pull --platform=linux/arm64 $(HUB)/proxyv2:$(VERSION)-distroless
+	docker run --rm --platform=linux/arm64 --entrypoint=/usr/local/bin/envoy $(HUB)/proxyv2:$(VERSION)-distroless --version
