@@ -1,12 +1,13 @@
 # all need run on aarch host
 VERSION = $(shell cat Dockerfile.version | grep "^FROM " | sed -e "s/FROM.*:v\{0,\}//g" )
 HUB ?= docker.io/querycapistio
-TEMP_ROOT = ${PWD}/.tmp
 
 # version tag or branch
 # examples: make xxx TAG=1.11.0
 TAG = $(VERSION)
 RELEASE_BRANCH = master
+
+TEMP_ROOT = ${PWD}/.tmp
 
 GIT_CLONE = git clone
 GIT_CLONE_TOOLS = git clone
@@ -34,28 +35,39 @@ dockerx.build-tools:
 	cd tools/docker/build-tools \
 		&& DRY_RUN=1 HUB=$(HUB) CONTAINER_BUILDER="buildx build --push --platform=linux/arm64" ./build-and-push.sh
 
-cleanup.envoy:
+cleanup.proxy:
 	rm -rf $(TEMP_ROOT)/proxy
 
 ISTIO_ENVOY_VERSION = $(shell cat $(TEMP_ROOT)/istio/istio.deps | grep lastStableSHA | sed 's/.*"lastStableSHA": "\([a-zA-Z0-9]*\)"/\1/g')
 
 # Clone istio/proxy
 # To checkout last stable sha from istio/istio
-clone.envoy: cleanup.istio clone.istio
+clone.proxy: cleanup.istio clone.istio
 	git clone https://github.com/istio/proxy.git $(TEMP_ROOT)/proxy
 	cd $(TEMP_ROOT)/proxy && git checkout $(ISTIO_ENVOY_VERSION)
 
+
+ENVOY_ORG = istio
+ENVOY_REPO = envoy
+
+# have to pre download the matched envoy and use --override_repository to overwrite to avoid private repo usage.
+prepare.envoy:
+	rm -rf $(TEMP_ROOT)/envoy
+	mkdir -p $(TEMP_ROOT)/envoy
+	wget -c "https://github.com/$(ENVOY_ORG)/$(ENVOY_REPO)/archive/$(shell cat $(TEMP_ROOT)/proxy/WORKSPACE | grep "ENVOY_SHA = " | sed -e "s/ENVOY_SHA = //g").tar.gz" \
+		-O - | tar -xz -C $(TEMP_ROOT)/envoy --strip-components=1
+
 # Build envoy
 # /tmp/bazel here should must be link here, cause, bazel-out is symlink to TEST_TMPDIR
-build.envoy: cleanup.envoy clone.envoy
+build.envoy: cleanup.proxy clone.proxy prepare.envoy
 	docker pull $(HUB)/build-tools-proxy:$(BUILD_TOOLS_VERSION)
 	docker run \
-		-e=ENVOY_ORG=istio \
-		-e=TEST_TMPDIR=/tmp/bazel \
 		-v=/tmp/bazel:/tmp/bazel \
+		-e=TEST_TMPDIR=/tmp/bazel \
+		-v=$(TEMP_ROOT)/envoy:/tmp/envoy \
 		-v=$(TEMP_ROOT)/proxy:/go/src/istio/proxy \
 		-w=/go/src/istio/proxy \
-		$(BUILD_TOOLS_PROXY_IMAGE) make build_envoy
+		$(BUILD_TOOLS_PROXY_IMAGE) make build_envoy BAZEL_BUILD_ARGS=--override_repository=envoy=/tmp/envoy
 	mkdir -p $(TEMP_ROOT)/envoy-linux-arm64 && cp $(TEMP_ROOT)/proxy/bazel-bin/src/envoy/envoy $(TEMP_ROOT)/envoy-linux-arm64/envoy
 
 cleanup.istio:

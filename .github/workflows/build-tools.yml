@@ -7,7 +7,6 @@ name: build-tools
     paths:
       - .github/workflows/build-tools.yml
       - tools
-      - Makefile
 
 jobs:
   build-tools:
