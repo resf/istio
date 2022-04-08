@@ -55,7 +55,7 @@ jobs:
           registry: docker.io
           username: ${{ secrets.DOCKER_USERNAME }}
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: envoy-linux-arm64
           path: .tmp/envoy-linux-arm64
