@@ -29,7 +29,7 @@ jobs:
 
       - run: make build.envoy
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: envoy-linux-arm64
           path: .tmp/envoy-linux-arm64
@@ -79,7 +79,7 @@ jobs:
         run: |
           HOME=$(echo ~) make deb;
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: istio-deb-arm64
           path: .tmp/*.deb
