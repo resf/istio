@@ -1,6 +1,7 @@
 # all need run on aarch host
 VERSION = $(shell cat Dockerfile.version | grep "^FROM " | sed -e "s/FROM.*:v\{0,\}//g" )
-HUB ?= docker.io/querycapistio
+GH_REPO ?= resf/istio
+HUB ?= ghcr.io/$(GH_REPO)
 
 # version tag or branch
 # examples: make xxx TAG=1.11.0
@@ -54,12 +55,18 @@ ENVOY_REPO = envoy
 prepare.envoy:
 	rm -rf $(TEMP_ROOT)/envoy
 	mkdir -p $(TEMP_ROOT)/envoy
-	wget -c "https://github.com/$(ENVOY_ORG)/$(ENVOY_REPO)/archive/$(shell cat $(TEMP_ROOT)/proxy/WORKSPACE | grep "ENVOY_SHA = " | sed -e "s/ENVOY_SHA = //g").tar.gz" \
+	wget -c "https://github.com/$(ENVOY_ORG)/$(ENVOY_REPO)/archive/$(shell cat $(TEMP_ROOT)/proxy/WORKSPACE | grep "ENVOY_SHA = " | sed -e "s/ENVOY_SHA = //g" | sed -e "s/\"//g").tar.gz" \
 		-O - | tar -xz -C $(TEMP_ROOT)/envoy --strip-components=1
+
+
+# https://github.com/envoyproxy/envoy/issues/19089#issuecomment-1008222286
+patch.gn:
+	cd $(TEMP_ROOT)/envoy && patch -u -b bazel/external/wee8.genrule_cmd -i $(PWD)/patch/envoy.patch
+	cat $(TEMP_ROOT)/envoy/bazel/external/wee8.genrule_cmd | grep "max-page-size"
 
 # Build envoy
 # /tmp/bazel here should must be link here, cause, bazel-out is symlink to TEST_TMPDIR
-build.envoy: cleanup.proxy clone.proxy prepare.envoy
+build.envoy: cleanup.proxy clone.proxy prepare.envoy patch.gn
 	docker pull $(HUB)/build-tools-proxy:$(BUILD_TOOLS_VERSION)
 	docker run \
 		-v=/tmp/bazel:/tmp/bazel \
@@ -67,7 +74,7 @@ build.envoy: cleanup.proxy clone.proxy prepare.envoy
 		-v=$(TEMP_ROOT)/envoy:/tmp/envoy \
 		-v=$(TEMP_ROOT)/proxy:/go/src/istio/proxy \
 		-w=/go/src/istio/proxy \
-		$(BUILD_TOOLS_PROXY_IMAGE) make build_envoy BAZEL_BUILD_ARGS=--override_repository=envoy=/tmp/envoy
+		$(BUILD_TOOLS_PROXY_IMAGE) make build_envoy BAZEL_BUILD_ARGS="--override_repository=envoy=/tmp/envoy"
 	mkdir -p $(TEMP_ROOT)/envoy-linux-arm64 && cp $(TEMP_ROOT)/proxy/bazel-bin/src/envoy/envoy $(TEMP_ROOT)/envoy-linux-arm64/envoy
 
 cleanup.istio:
@@ -155,3 +162,20 @@ check.istio:
 	@echo "ISTIO_ENVOY_VERSION: $(ISTIO_ENVOY_VERSION)"
 	docker pull --platform=linux/arm64 $(HUB)/proxyv2:$(VERSION)-distroless
 	docker run --rm --platform=linux/arm64 --entrypoint=/usr/local/bin/envoy $(HUB)/proxyv2:$(VERSION)-distroless --version
+
+# to initials packages on ghcr.io
+# could be used to check access too
+ALL_IMAGES=build-tools build-tools-proxy $(COMPONENTS)
+ensure.ghcr.packages:
+	$(foreach component,$(ALL_IMAGES),\
+		docker buildx build --push \
+          --label=org.opencontainers.image.source=https://github.com/$(GH_REPO) \
+          --tag=$(HUB)/$(component):initial \
+          -f Dockerfile.initial .github;)
+
+setup.rocky-linux:
+	dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+	dnf install docker-ce --allowerasing -y
+	systemctl start docker
+	systemctl enable docker
+	dnf install git make wget -y

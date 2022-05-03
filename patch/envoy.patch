@@ -1,0 +1,13 @@
+diff --git a/bazel/external/wee8.genrule_cmd b/bazel/external/wee8.genrule_cmd
+index c01a8c5a3a..034fc84e2f 100644
+--- a/bazel/external/wee8.genrule_cmd
++++ b/bazel/external/wee8.genrule_cmd
+@@ -109,6 +109,8 @@ if [[ $${ARCH} == "x86_64" ]]; then
+   WEE8_BUILD_ARGS+=" target_cpu=\"x64\""
+ elif [[ $${ARCH} == "aarch64" || $${ARCH} == "arm64" ]]; then
+   WEE8_BUILD_ARGS+=" target_cpu=\"arm64\""
++  # Force align with 64k for aarch64
++  export LDFLAGS="$${LDFLAGS-} -z max-page-size=0x10000"
+ elif [[ $${ARCH} == "ppc64le" ]]; then
+   WEE8_BUILD_ARGS+=" target_cpu=\"ppc64\""
+ elif [[ $${ARCH} == "s390x" ]]; then

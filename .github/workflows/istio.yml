@@ -14,22 +14,22 @@ jobs:
     runs-on: [ "self-hosted", "linux", "ARM64" ]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: docker/setup-buildx-action@v1
+      - uses: docker/setup-buildx-action@v2
         with:
           driver-opts: network=host
 
-      - uses: docker/login-action@v1
-        name: Login docker.io
+      - uses: docker/login-action@v2
+        name: Login ghcr.io
         with:
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          registry: docker.io
-          username: ${{ secrets.DOCKER_USERNAME }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - run: make build.envoy
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: envoy-linux-arm64
           path: .tmp/envoy-linux-arm64
@@ -41,21 +41,21 @@ jobs:
     runs-on: [ "self-hosted", "linux", "ARM64" ]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: docker/setup-qemu-action@v1
-      - uses: docker/setup-buildx-action@v1
+      - uses: docker/setup-qemu-action@v2
+      - uses: docker/setup-buildx-action@v2
         with:
           driver-opts: network=host
 
-      - uses: docker/login-action@v1
-        name: Login docker.io
+      - uses: docker/login-action@v2
+        name: Login ghcr.io
         with:
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          registry: docker.io
-          username: ${{ secrets.DOCKER_USERNAME }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: envoy-linux-arm64
           path: .tmp/envoy-linux-arm64
@@ -72,6 +72,8 @@ jobs:
           HOME=$(echo ~) make build.istio;
 
       - name: Build Istio Images
+        env:
+          GH_REPO: ${{ github.repository }}
         run: |
           HOME=$(echo ~) make dockerx.istio-images;
 
@@ -79,7 +81,7 @@ jobs:
         run: |
           HOME=$(echo ~) make deb;
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: istio-deb-arm64
           path: .tmp/*.deb
