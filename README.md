@@ -5,7 +5,7 @@ This repo is for building oci images for istio stacks
 
 ## How to use?
 
-using images under `docker.io/querycapistio`
+using images under [`ghcr.io/resf/istio`](https://github.com/orgs/resf/packages?repo_name=istio)
 
 ### Environment Requirements
 
@@ -16,7 +16,7 @@ make sure aarch64 (32bit is not supported. because of the envoy, with needs goog
 Same as https://istio.io/latest/docs/setup/install/operator, but with `--hub`
 
 ```
-$ istioctl operator init --hub=docker.io/querycapistio --tag=1.13.0
+$ istioctl operator init --hub=ghcr.io/resf/istio --tag=1.13.0
 ```
 
 ### Install Istio
@@ -32,7 +32,7 @@ metadata:
   namespace: istio-system
   name: example-istiocontrolplane
 spec:
-  hub: docker.io/querycapistio
+  hub: ghcr.io/resf/istio
   profile: demo
 EOF
 ```
@@ -68,32 +68,6 @@ spec:
           affinity: *affinity
 ```
 
-## [`Istio Components`](https://github.com/istio/istio)
-
-## `querycapistio/proxyv2:{VERSION}[-distroless]`
-
-[![Docker Version](https://img.shields.io/docker/v/querycapistio/proxyv2?sort=semver)](https://hub.docker.com/r/querycapistio/proxyv2/tags)
-![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/proxyv2?sort=semver)
-![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/proxyv2)
-
-## `querycapistio/pilot:{VERSION}[-distroless]`
-
-[![Docker Version](https://img.shields.io/docker/v/querycapistio/pilot?sort=semver)](https://hub.docker.com/r/querycapistio/pilot/tags)
-![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/pilot?sort=semver)
-![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/pilot)
-
-## `querycapistio/operator:{VERSION}[-distroless]`
-
-[![Docker Version](https://img.shields.io/docker/v/querycapistio/operator?sort=semver)](https://hub.docker.com/r/querycapistio/operator/tags)
-![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/operator?sort=semver)
-![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/operator)
-
-## `querycapistio/install-cni:{VERSION}[-distroless]`
-
-[![Docker Version](https://img.shields.io/docker/v/querycapistio/install-cni?sort=semver)](https://hub.docker.com/r/querycapistio/install-cni/tags)
-![Docker Image Size](https://img.shields.io/docker/image-size/querycapistio/install-cni?sort=semver)
-![Docker Pulls](https://img.shields.io/docker/pulls/querycapistio/install-cni)
-
 # Notice
 
 * *all images tag version without `v` prefix* like official did
@@ -114,8 +88,8 @@ flowchart TD
         --> build_istio
     end   
     
-    build_tools_images("querycapistio/build-tools[-proxy]:release-<VERSION_MINOR>-latest")
-    istio_images("querycapistio/*:<VERSION>*[-distroless]")
+    build_tools_images("ghcr.io/resf/istio/build-tools[-proxy]:release-<VERSION_MINOR>-latest")
+    istio_images("ghcr.io/resf/istio/*:<VERSION>*[-distroless]")
     
     dependabot
     -->|"upgrade if need"|gitmodules("tools commitsha in gitmodules")
