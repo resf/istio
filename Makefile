@@ -13,11 +13,11 @@ TEMP_ROOT = ${PWD}/.tmp
 GIT_CLONE = git clone
 GIT_CLONE_TOOLS = git clone
 
-ifneq ($(TAG),master)
-	RELEASE_BRANCH = release-$(word 1,$(subst ., ,$(VERSION))).$(word 2,$(subst ., ,$(VERSION)))
-	GIT_CLONE = git clone -b $(TAG)
-	GIT_CLONE_TOOLS = git clone -b $(RELEASE_BRANCH)
-endif
+RELEASE_BRANCH = release-$(word 1,$(subst ., ,$(VERSION))).$(word 2,$(subst ., ,$(VERSION)))
+GIT_CLONE = git clone -b $(TAG)
+GIT_CLONE_TOOLS = git clone -b $(RELEASE_BRANCH)
+
+ENVOY_DIR = $(TEMP_ROOT)/envoy/$(RELEASE_BRANCH)
 
 BUILD_TOOLS_VERSION = $(RELEASE_BRANCH)-latest
 BUILD_TOOLS_IMAGE = $(HUB)/build-tools:$(BUILD_TOOLS_VERSION)
@@ -53,25 +53,24 @@ ENVOY_REPO = envoy
 
 # have to pre download the matched envoy and use --override_repository to overwrite to avoid private repo usage.
 prepare.envoy:
-	rm -rf $(TEMP_ROOT)/envoy
-	mkdir -p $(TEMP_ROOT)/envoy
+	rm -rf $(ENVOY_DIR) && mkdir -p $(ENVOY_DIR)
 	wget -c "https://github.com/$(ENVOY_ORG)/$(ENVOY_REPO)/archive/$(shell cat $(TEMP_ROOT)/proxy/WORKSPACE | grep "ENVOY_SHA = " | sed -e "s/ENVOY_SHA = //g" | sed -e "s/\"//g").tar.gz" \
-		-O - | tar -xz -C $(TEMP_ROOT)/envoy --strip-components=1
+		-O - | tar -xz -C $(ENVOY_DIR) --strip-components=1
 
 
 # https://github.com/envoyproxy/envoy/issues/19089#issuecomment-1008222286
 patch.gn:
-	cd $(TEMP_ROOT)/envoy && patch -u -b bazel/external/wee8.genrule_cmd -i $(PWD)/patch/envoy.patch
-	cat $(TEMP_ROOT)/envoy/bazel/external/wee8.genrule_cmd | grep "max-page-size"
+	cd $(ENVOY_DIR) && patch -u -b bazel/external/wee8.genrule_cmd -i $(PWD)/patch/envoy.$(RELEASE_BRANCH).patch
+	cat $(ENVOY_DIR)/bazel/external/wee8.genrule_cmd | grep "max-page-size"
 
 # Build envoy
 # /tmp/bazel here should must be link here, cause, bazel-out is symlink to TEST_TMPDIR
-build.envoy: cleanup.proxy clone.proxy prepare.envoy patch.gn
+build.envoy: cleanup.proxy clone.proxy prepare.envoy
 	docker pull $(HUB)/build-tools-proxy:$(BUILD_TOOLS_VERSION)
 	docker run \
-		-v=/tmp/bazel:/tmp/bazel \
-		-e=TEST_TMPDIR=/tmp/bazel \
-		-v=$(TEMP_ROOT)/envoy:/tmp/envoy \
+		-v=/tmp/bazel/$(RELEASE_BRANCH):/tmp/bazel/$(RELEASE_BRANCH) \
+		-e=TEST_TMPDIR=/tmp/bazel/$(RELEASE_BRANCH) \
+		-v=$(ENVOY_DIR):/tmp/envoy \
 		-v=$(TEMP_ROOT)/proxy:/go/src/istio/proxy \
 		-w=/go/src/istio/proxy \
 		$(BUILD_TOOLS_PROXY_IMAGE) make build_envoy BAZEL_BUILD_ARGS="--override_repository=envoy=/tmp/envoy"
@@ -142,14 +141,15 @@ dockerx.istio.prepare:
 	sed -i -e 's/gcr.io\/istio-release\/\(base\|distroless\)/$(ESCAPED_HUB)\/\1/g' $(TEMP_ROOT)/istio/cni/deployments/kubernetes/Dockerfile.install-cni
 	docker pull $(BUILD_TOOLS_IMAGE)
 
+DOCKER_ARCHITECTURES="linux/amd64,linux/arm64"
 # Build istio base images as multi-arch
 dockerx.istio-base:
-	$(ISTIO_MAKE) dockerx.base DOCKERX_PUSH=true DOCKER_ARCHITECTURES=linux/amd64,linux/arm64
-	$(ISTIO_MAKE) dockerx.distroless DOCKERX_PUSH=true DOCKER_ARCHITECTURES=linux/amd64,linux/arm64
+	$(ISTIO_MAKE) push.docker.base DOCKER_ARCHITECTURES=$(DOCKER_ARCHITECTURES)
+	$(ISTIO_MAKE) push.docker.distroless DOCKER_ARCHITECTURES=$(DOCKER_ARCHITECTURES)
 
 COMPONENTS = proxyv2 pilot operator install-cni
 dockerx.istio-images: dockerx.istio.prepare dockerx.istio-base
-	$(foreach component,$(COMPONENTS),cd $(TEMP_ROOT)/istio && $(ISTIO_MAKE) dockerx.$(component) DOCKERX_PUSH=true DOCKER_BUILD_VARIANTS="default distroless" DOCKER_ARCHITECTURES=linux/amd64,linux/arm64;)
+	$(foreach component,$(COMPONENTS),cd $(TEMP_ROOT)/istio && $(ISTIO_MAKE) push.docker.$(component) DOCKER_BUILD_VARIANTS="default distroless" DOCKER_ARCHITECTURES=$(DOCKER_ARCHITECTURES);)
 
 # Build istio deb
 deb:

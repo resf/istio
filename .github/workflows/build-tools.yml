@@ -3,7 +3,7 @@ name: build-tools
 "on":
   push:
     branches:
-      - "release-1.13"
+      - main
     paths:
       - .github/workflows/build-tools.yml
       - tools

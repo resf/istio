@@ -30,13 +30,13 @@ updates:
       - dependency-name: istio/proxyv2
         update-types: [ "version-update:semver-major", "version-update:semver-minor" ]
 
-  - target-branch: release-1.11
+  - target-branch: release-1.13
     package-ecosystem: "gitsubmodule"
     directory: "/"
     schedule:
       interval: "daily"
 
-  - target-branch: release-1.11
+  - target-branch: release-1.13
     package-ecosystem: "docker"
     directory: "/"
     schedule:

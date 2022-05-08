@@ -1,4 +1,4 @@
 [submodule "tools"]
 	path = tools
 	url = https://github.com/istio/tools.git
-	branch = release-1.13
+	branch = release-1.14
