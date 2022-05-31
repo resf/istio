@@ -16,7 +16,7 @@ make sure aarch64 (32bit is not supported. because of the envoy, with needs goog
 Same as https://istio.io/latest/docs/setup/install/operator, but with `--hub`
 
 ```
-$ istioctl operator init --hub=ghcr.io/resf/istio --tag=1.13.0
+$ istioctl operator init --hub=ghcr.io/resf/istio --tag=1.13.4
 ```
 
 ### Install Istio
