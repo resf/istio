@@ -179,3 +179,8 @@ setup.rocky-linux:
 	systemctl start docker
 	systemctl enable docker
 	dnf install git make wget -y
+
+cleanup:
+	docker system prune --force
+	rm -rf /tmp/bazel/*
+	rm -rf /tmp/envoy/*
