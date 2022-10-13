@@ -68,6 +68,25 @@ spec:
           affinity: *affinity
 ```
 
+# Config sidecar inject
+```yaml
+values: |- # find those keys below
+  {
+    "global": {
+      ...
+      "hub": "ghcr.io/resf/istio",
+      ...
+      "proxy": {
+        ...
+        "image": "proxyv2", # there are two images 
+        "tag": "1.14.1", # ensure the tag in the hub
+        ...
+       },
+       ...
+    ...
+  }
+```
+
 # Notice
 
 * *all images tag version without `v` prefix* like official did
